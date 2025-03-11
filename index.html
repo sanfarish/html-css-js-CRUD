@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRUD Operations</title>
+  <title>Employee Management System</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
@@ -11,12 +11,15 @@
   <div id="container" class="bg-gray-700">
 
     <header class="bg-red-800 text-white h-16 flex items-center justify-center">
-      <h1>CRUD Operations</h1>
+      <h1 class="text-2xl">Employee Management System</h1>
     </header>
 
     <main class="flex items-center justify-center py-8 px-32">
+
+      <!-- Main Card -->
       <div class="bg-gray-800 h-full w-full p-4 shadow-lg rounded-lg flex flex-col gap-4">
 
+        <!-- Card Header 1 -->
         <div class="flex items-center justify-between">
           <label class="text-white" for="entries">
             Show
@@ -27,33 +30,18 @@
             </select>
             entries
           </label>
+
           <label class="text-white" for="search">
             Search: 
             <input class="border rounded px-2" type="text" name="search" id="search" placeholder="name / email">
           </label>
         </div>
 
-        <form class="flex items-center justify-between">
-          <label class="text-white" for="name">
-            Name:
-            <input class="border rounded px-2" type="text" name="name" id="name" placeholder="John Doe" required>
-          </label>
-          <label class="text-white flex items-center gap-2" for="picture">
-            Picture:
-            <img src="./public/avatar.png" alt="avatar" width="20" height="20" id="pictureFrame">
-            <input class="border rounded px-2 w-52" type="file" name="picture" id="picture">
-          </label>
-          <label class="text-white" for="age">
-            Age:
-            <input class="border rounded px-2 w-16" type="number" name="age" id="age" placeholder="25" required>
-          </label>
-          <label class="text-white" for="email">
-            Email:
-            <input class="border rounded px-2" type="email" name="email" id="email" placeholder="johndoe@mail.com" required>
-          </label>
-          <button type="button" class="bg-red-800 text-white rounded px-2 py-1 cursor-pointer" onclick="addData()">Add Data</button>
-        </form>
-        
+        <!-- Card Header 2 -->
+        <div class="flex items-center">
+          <input class="mr-auto py-2 px-4 font-semibold rounded cursor-pointer text-white bg-red-800 hover:bg-red-700 active:bg-red-900" type="button" value="Add Employee" onmouseup="openModal()">
+        </div>
+
         <table class="text-white border-collapse border border-gray-400 table-fixed">
           <thead class="uppercase">
             <tr class="text-left">
@@ -64,9 +52,12 @@
               <th scope="col" class="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
           </thead>
+
+          <!-- Main Data Table -->
           <tbody id="data"></tbody>
         </table>
 
+        <!-- Pagination -->
         <div class="text-white flex items-center justify-center gap-4">
           <button type="button" class="border rounded px-2 py-1 cursor-pointer" onclick="prevPage()">Previous</button>
           <div id="pages"></div>
@@ -74,13 +65,48 @@
         </div>
       </div>
     </main>
-  
+
     <footer class="bg-red-800 text-white h-16 flex items-center justify-center">
-      <h6>C 2025 Copyright Faris Hasan</h6>
+      <h6>&copy; 2025 Copyright Faris Hasan</h6>
     </footer>
 
-  </div>
+    <!-- Modal -->
+    <section class="hidden fixed top-0 left-0 h-screen w-screen flex items-center justify-center backdrop-blur-xs" id="modal">
 
+      <!-- Modal Card -->
+      <div class="bg-gray-600 flex flex-col min-w-xl px-8 pb-8 pt-4 gap-4 shadow-md rounded">
+
+        <!-- Close Button -->
+        <input class="font-bold ml-auto px-2 border-2 rounded-full cursor-pointer text-gray-400 hover:text-gray-200 active:text-gray-300" type="button" value="X" onclick="closeModal()">
+        
+        <form class="flex items-center gap-4">
+          <label class="text-white flex flex-col items-center gap-2" for="picture">
+            Picture:
+            <img class="rounded-full cursor-pointer" src="./public/avatar.png" alt="avatar" width="128" height="128" id="pictureFrame">
+            <input class="hidden" type="file" name="picture" id="picture">
+          </label>
+          
+          <div class="grow flex flex-col gap-4">
+            <label class="text-white text-lg flex justify-between" for="name">
+              <span class="w-16">Name:</span>
+              <input class="border rounded px-2" type="text" name="name" id="name" placeholder="John Doe" required>
+            </label>
+            <label class="text-white text-lg flex justify-between" for="age">
+              <span class="w-16">Age:</span>
+              <input class="border rounded px-2" type="number" name="age" id="age" placeholder="25" required>
+            </label>
+            <label class="text-white text-lg flex justify-between" for="email">
+              <span class="w-16">Email:</span>
+              <input class="border rounded px-2" type="email" name="email" id="email" placeholder="johndoe@mail.com" required>
+            </label>
+
+            <button type="button" class="bg-red-800 hover:bg-red-700 active:bg-red-900 text-white px-2 py-1 rounded shadow cursor-pointer" onclick="addData()">Add Data</button>
+          </div>
+        </form>
+      </div>
+    </section>
+  </div>
+  
   <script src="index.js"></script>
 </body>
 </html>

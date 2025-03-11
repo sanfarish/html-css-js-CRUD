@@ -1,3 +1,7 @@
+(() => {
+  const API_URL = "http://localhost:3000"
+})()
+
 const data = [
   { name: "Faris Hasan", picture: "./public/avatar.png", age: 25, email: "farisfalah@gmail.com"},
   { name: "John Doe", picture: "./public/avatar.png", age: 30, email: "doejohn@mail.com"},
@@ -18,6 +22,7 @@ const entries = document.querySelector("#entries")
 const pages = document.querySelector("#pages")
 const picture = document.querySelector("#picture")
 const pictureFrame = document.querySelector("#pictureFrame")
+const modal = document.querySelector("#modal")
 
 let length = data.length
 let indexStart = 0
@@ -90,10 +95,6 @@ function deleteData(index) {
   showData(data)
 }
 
-function closeModal() {
-  document.querySelector("#modal").remove()
-}
-
 picture.addEventListener("change", e => {
   if (picture.files[0].size < 1000000) {
     const fileReader = new FileReader()
@@ -159,6 +160,14 @@ entries.addEventListener("change", () => {
   pagesFunction()
   showData(data)
 })
+
+function openModal() {
+  modal.classList.remove("hidden")
+}
+
+function closeModal() {
+  modal.classList.add("hidden")
+}
 
 // function addModal() {
 //   const div =
