@@ -1,0 +1,23 @@
+{
+  "name": "html-css-js-crud",
+  "version": "1.0.0",
+  "description": "Employee Management System App using HtmL, Tailwind CSS, and JavaScript only.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "json-server db.json"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanfarish/html-css-js-CRUD.git"
+  },
+  "author": "Faris Hasan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/sanfarish/html-css-js-CRUD/issues"
+  },
+  "homepage": "https://github.com/sanfarish/html-css-js-CRUD#readme",
+  "dependencies": {
+    "json-server": "^1.0.0-beta.3"
+  }
+}

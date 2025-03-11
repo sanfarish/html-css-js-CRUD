@@ -1,0 +1,94 @@
+{
+    "employees": [
+        {
+            "id": "aioi7liri2",
+            "name": "Faris Hasan",
+            "age": 25,
+            "email": "farisfalah@gmail.com",
+            "date": "2025-03-20",
+            "image": "/avatar.png",
+            "role": "Software Developer"
+        },
+        {
+            "id": "kifunx5cmj",
+            "name": "Richard Thorn",
+            "age": 27,
+            "email": "richardthorn@yahoo.com",
+            "date": "2024-04-18",
+            "image": "/avatar.png",
+            "role": "Product Manager"
+        },
+        {
+            "id": "jet37wxnuh",
+            "name": "Cynthia Clover",
+            "age": 29,
+            "email": "cynthiaclover@gmail.com",
+            "date": "2023-05-15",
+            "image": "/avatar.png",
+            "role": "Business Analyst"
+        },
+        {
+            "id": "d0q3ie7kcc",
+            "name": "Anna Brown",
+            "age": 24,
+            "email": "annabrown@yahoo.com",
+            "date": "2022-06-11",
+            "image": "/avatar.png",
+            "role": "UI/UX Designer"
+        },
+        {
+            "id": "rqbqu9nad3",
+            "name": "Dave Andrews",
+            "age": 31,
+            "email": "daveandrews@gmail.com",
+            "date": "2021-07-06",
+            "image": "/avatar.png",
+            "role": "QA Engineer"
+        },
+        {
+            "id": "15se1mzmkt",
+            "name": "Riley Robinson",
+            "age": 33,
+            "email": "rileyrobinson@yahoo.com",
+            "date": "2021-08-30",
+            "image": "/avatar.png",
+            "role": "Software Developer"
+        },
+        {
+            "id": "2rlr1dllm5",
+            "name": "Benedict Maxwell",
+            "age": 34,
+            "email": "benedictmaxwell@gmail.com",
+            "date": "2022-09-28",
+            "image": "/avatar.png",
+            "role": "Product Manager"
+        },
+        {
+            "id": "82ti39k3ny",
+            "name": "Amanda Campbell",
+            "age": 32,
+            "email": "amandacampbell@yahoo.com",
+            "date": "2023-10-27",
+            "image": "/avatar.png",
+            "role": "Business Analyst"
+        },
+        {
+            "id": "9agcke672x",
+            "name": "Lou Vera",
+            "age": 28,
+            "email": "louvera@gmail.com",
+            "date": "2024-11-24",
+            "image": "/avatar.png",
+            "role": "UI/UX Designer"
+        },
+        {
+            "id": "4w6de3qepm",
+            "name": "Jerry Thomas",
+            "age": 30,
+            "email": "jerrythomas@yahoo.com",
+            "date": "2025-02-23",
+            "image": "/avatar.png",
+            "role": "QA Engineer"
+        }
+    ]
+}
