@@ -4,108 +4,119 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Employee Management System</title>
-  <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <style type="text/tailwindcss">
+    @theme {
+      --color-bg1: #283848;
+      --color-bg2: #FF6262;
+      --color-bg3: #225588;
+      --color-button1: #FFD500;
+      --color-button2: #FFF000;
+      --color-button3: #FFBA00;
+    }
+  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div id="container" class="bg-gray-700">
+  <header class="bg-bg2 h-16 flex items-center justify-center">
+    <h1 class="text-2xl">Employee Management System</h1>
+  </header>
 
-    <header class="bg-red-800 text-white h-16 flex items-center justify-center">
-      <h1 class="text-2xl">Employee Management System</h1>
-    </header>
+  <main class="bg-bg1 flex items-center justify-center py-8 px-16">
 
-    <main class="flex items-center justify-center py-8 px-32">
+    <!-- Main Card -->
+    <div class="bg-bg3 h-full w-full p-8 shadow-xl rounded-lg flex flex-col gap-4">
 
-      <!-- Main Card -->
-      <div class="bg-gray-800 h-full w-full p-4 shadow-lg rounded-lg flex flex-col gap-4">
+      <!-- Card Header 1 -->
+      <div class="flex items-center justify-between">
+        <label class="text-white flex items-center gap-2" for="entries">
+          Show
+          <select class="py-1 px-1 border rounded cursor-pointer" name="entries" id="entries">
+            <option class="text-black" value="2" selected>2</option>
+            <option class="text-black" value="3">3</option>
+            <option class="text-black" value="5">5</option>
+          </select>
+          entries
+        </label>
 
-        <!-- Card Header 1 -->
-        <div class="flex items-center justify-between">
-          <label class="text-white" for="entries">
-            Show
-            <select class="border rounded cursor-pointer" name="entries" id="entries">
-              <option class="text-black" value="3">3</option>
-              <option class="text-black" value="5">5</option>
-              <option class="text-black" value="8">8</option>
-            </select>
-            entries
-          </label>
-
-          <label class="text-white" for="search">
-            Search: 
-            <input class="border rounded px-2" type="text" name="search" id="search" placeholder="name / email">
-          </label>
-        </div>
-
-        <!-- Card Header 2 -->
-        <div class="flex items-center">
-          <input class="mr-auto py-2 px-4 font-semibold rounded cursor-pointer text-white bg-red-800 hover:bg-red-700 active:bg-red-900" type="button" value="Add Employee" onmouseup="openModal()">
-        </div>
-
-        <table class="text-white border-collapse border border-gray-400 table-fixed">
-          <thead class="uppercase">
-            <tr class="text-left">
-              <th scope="col" class="border border-gray-300 px-4 py-2 w-72">Name</th>
-              <th scope="col" class="border border-gray-300 px-4 py-2 w-30">Picture</th>
-              <th scope="col" class="border border-gray-300 px-4 py-2 w-20">Age</th>
-              <th scope="col" class="border border-gray-300 px-4 py-2 w-72">Email</th>
-              <th scope="col" class="border border-gray-300 px-4 py-2">Actions</th>
-            </tr>
-          </thead>
-
-          <!-- Main Data Table -->
-          <tbody id="data"></tbody>
-        </table>
-
-        <!-- Pagination -->
-        <div class="text-white flex items-center justify-center gap-4">
-          <button type="button" class="border rounded px-2 py-1 cursor-pointer" onclick="prevPage()">Previous</button>
-          <div id="pages"></div>
-          <button type="button" class="border rounded px-2 py-1 cursor-pointer" onclick="nextPage()">Next</button>
-        </div>
+        <label class="text-white flex items-center gap-2" for="search">
+          Search: 
+          <input class="py-1 px-2 border rounded" type="text" name="search" id="search" placeholder="ID / Name / Email / Role">
+        </label>
       </div>
-    </main>
 
-    <footer class="bg-red-800 text-white h-16 flex items-center justify-center">
-      <h6>&copy; 2025 Copyright Faris Hasan</h6>
-    </footer>
+      <!-- Card Header 2 -->
+      <div class="flex items-center">
+        <input class="mr-auto py-2 px-4 font-semibold rounded cursor-pointer bg-button1 hover:bg-button2 active:bg-button3" type="button" value="Add Employee" id="open-modal">
+      </div>
 
-    <!-- Modal -->
-    <section class="hidden fixed top-0 left-0 h-screen w-screen flex items-center justify-center backdrop-blur-xs" id="modal">
+      <table class="text-white border-collapse border table-fixed">
+        <thead class="uppercase">
+          <tr class="text-left">
+            <th scope="col" class="py-2 px-4 border text-center">Picture</th>
+            <th scope="col" class="py-2 px-4 border">ID</th>
+            <th scope="col" class="py-2 px-4 border">Name</th>
+            <th scope="col" class="py-2 px-4 border">Email</th>
+            <th scope="col" class="py-2 px-4 border text-center">Start Date</th>
+            <th scope="col" class="py-2 px-4 border text-center">Salary</th>
+            <th scope="col" class="py-2 px-4 border">Role</th>
+            <th scope="col" class="py-2 px-4 border text-center">Active</th>
+            <th scope="col" class="py-2 px-4 border text-center">Actions</th>
+          </tr>
+        </thead>
 
-      <!-- Modal Card -->
-      <div class="bg-gray-600 flex flex-col min-w-xl px-8 pb-8 pt-4 gap-4 shadow-md rounded">
+        <!-- Main Data Table -->
+        <tbody id="data"></tbody>
+      </table>
 
-        <!-- Close Button -->
-        <input class="font-bold ml-auto px-2 border-2 rounded-full cursor-pointer text-gray-400 hover:text-gray-200 active:text-gray-300" type="button" value="X" onclick="closeModal()">
+      <!-- Pagination -->
+      <div class="text-white flex justify-center gap-4">
+        <input class="border rounded px-2 py-1 cursor-pointer" type="button" value="Previous" id="previous">
+        <div class="flex gap-4" id="pages"></div>
+        <input class="border rounded px-2 py-1 cursor-pointer" type="button" value="Next" id="next">
+      </div>
+    </div>
+  </main>
+
+  <footer class="bg-bg2 h-16 flex items-center justify-center">
+    <span>&copy; 2025 Copyright Faris Hasan</span>
+  </footer>
+
+  <!-- Modal -->
+  <section class="hidden fixed top-0 left-0 h-screen w-screen items-center justify-center backdrop-blur-xs" id="modal">
+
+    <!-- Modal Card -->
+    <div class="bg-gray-600 flex flex-col min-w-xl px-8 pb-8 pt-4 gap-4 shadow-md rounded">
+
+      <!-- Close Button -->
+      <input class="font-bold ml-auto px-2 border-2 rounded-full cursor-pointer text-gray-400 hover:text-gray-200 active:text-gray-300" type="button" value="X" id="close-modal">
+      
+      <form class="flex items-center gap-4">
+        <label class="text-white flex flex-col items-center gap-2" for="picture">
+          Picture:
+          <img class="rounded-full cursor-pointer" src="./public/avatar.png" alt="avatar" width="128" height="128" id="pictureFrame">
+          <input class="hidden" type="file" name="picture" id="picture">
+        </label>
         
-        <form class="flex items-center gap-4">
-          <label class="text-white flex flex-col items-center gap-2" for="picture">
-            Picture:
-            <img class="rounded-full cursor-pointer" src="./public/avatar.png" alt="avatar" width="128" height="128" id="pictureFrame">
-            <input class="hidden" type="file" name="picture" id="picture">
+        <div class="grow flex flex-col gap-4">
+          <label class="text-white text-lg flex justify-between" for="name">
+            <span class="w-16">Name:</span>
+            <input class="border rounded px-2" type="text" name="name" id="name" placeholder="John Doe" required>
           </label>
-          
-          <div class="grow flex flex-col gap-4">
-            <label class="text-white text-lg flex justify-between" for="name">
-              <span class="w-16">Name:</span>
-              <input class="border rounded px-2" type="text" name="name" id="name" placeholder="John Doe" required>
-            </label>
-            <label class="text-white text-lg flex justify-between" for="age">
-              <span class="w-16">Age:</span>
-              <input class="border rounded px-2" type="number" name="age" id="age" placeholder="25" required>
-            </label>
-            <label class="text-white text-lg flex justify-between" for="email">
-              <span class="w-16">Email:</span>
-              <input class="border rounded px-2" type="email" name="email" id="email" placeholder="johndoe@mail.com" required>
-            </label>
+          <label class="text-white text-lg flex justify-between" for="age">
+            <span class="w-16">Age:</span>
+            <input class="border rounded px-2" type="number" name="age" id="age" placeholder="25" required>
+          </label>
+          <label class="text-white text-lg flex justify-between" for="email">
+            <span class="w-16">Email:</span>
+            <input class="border rounded px-2" type="email" name="email" id="email" placeholder="johndoe@mail.com" required>
+          </label>
 
-            <button type="button" class="bg-red-800 hover:bg-red-700 active:bg-red-900 text-white px-2 py-1 rounded shadow cursor-pointer" onclick="addData()">Add Data</button>
-          </div>
-        </form>
-      </div>
-    </section>
-  </div>
+          <button type="button" class="py-2 px-4 font-semibold shadow rounded cursor-pointer bg-button1 hover:bg-button2 active:bg-button3" onclick="addData()">Add Data</button>
+        </div>
+      </form>
+    </div>
+  </section>
   
   <script src="index.js"></script>
 </body>

@@ -1,225 +1,270 @@
 (() => {
   const API_URL = "http://localhost:3000"
-})()
+  const employees = []
+  const filteredEmployees = []
 
-const data = [
-  { name: "Faris Hasan", picture: "./public/avatar.png", age: 25, email: "farisfalah@gmail.com"},
-  { name: "John Doe", picture: "./public/avatar.png", age: 30, email: "doejohn@mail.com"},
-  { name: "Jane Doe", picture: "./public/avatar.png", age: 20, email: "janedoe@mail.com"},
-  { name: "Alpha", picture: "./public/avatar.png", age: 25, email: "alpha@gmail.com"},
-  { name: "Beta", picture: "./public/avatar.png", age: 30, email: "beta@mail.com"},
-  { name: "Gamma", picture: "./public/avatar.png", age: 20, email: "gamma@mail.com"},
-  { name: "Delta", picture: "./public/avatar.png", age: 25, email: "delta@gmail.com"},
-  { name: "Epsilon", picture: "./public/avatar.png", age: 30, email: "epsilon@mail.com"},
-  { name: "Zeta", picture: "./public/avatar.png", age: 20, email: "zeta@mail.com"},
-  { name: "Eta", picture: "./public/avatar.png", age: 20, email: "eta@mail.com"},
-  { name: "Theta", picture: "./public/avatar.png", age: 20, email: "theta@mail.com"},
-]
+  const table = document.querySelector("#data")
+  const entryInput = document.querySelector("#entries")
+  const searchInput = document.querySelector("#search")
+  const pagesInput = document.querySelector("#pages")
+  const prevPage = document.querySelector("#previous")
+  const nextPage = document.querySelector("#next")
+  const openModal = document.querySelector("#open-modal")
+  const closeModal = document.querySelector("#close-modal")
+  const modal = document.querySelector("#modal")
 
-const container = document.querySelector("#container")
-const table = document.querySelector("#data")
-const entries = document.querySelector("#entries")
-const pages = document.querySelector("#pages")
-const picture = document.querySelector("#picture")
-const pictureFrame = document.querySelector("#pictureFrame")
-const modal = document.querySelector("#modal")
+  let startIndex = 0
+  let endIndex = entryInput.value - 1
+  let currentPage = 1
+  let filterOn = false
 
-let length = data.length
-let indexStart = 0
-let indexEnd = 2
-let size = parseInt(entries.value)
-let pageNow = 1
+  /**
+   * Fetch data form server.
+   * @param {string} url 
+   * @returns 
+   */
+  async function fetchData(url) {
+    const res = await fetch(url)
+    const data = await res.json()
+    return data
+  }
 
-function showData(neededData) {
-  table.innerHTML = ""
-  neededData.forEach((item, index) => {
-    if (index >= indexStart && index <= indexEnd) {
-      const row =
-      `<tr class="card bg-gray-900 h-16">
-        <td class="border border-gray-300 px-4">${item.name}</td>
-        <td class="border border-gray-300 px-4">
-          <img src="${item.picture}" alt="${item.picture}" width="40" height="40">
-        </td>
-        <td class="border border-gray-300 px-4">${item.age}</td>
-        <td class="border border-gray-300 px-4">${item.email}</td>
-        <td class="border border-gray-300 px-4 text-center">
-          <button type="button" class="bg-green-600 px-2 py-1 mx-1 rounded cursor-pointer">Detail</button>
-          <button type="button" class="bg-yellow-600 px-2 py-1 mx-1 rounded cursor-pointer" onclick="updateData(${index})">Edit</button>
-          <button type="button" class="bg-red-600 px-2 py-1 mx-1 rounded cursor-pointer" onclick="deleteData(${index})">Delete</button>
-        </td>
-      </tr>`
-      table.innerHTML += row
+  /**
+   * Fill "employees" array with data.
+   * @param {Array} data 
+   */
+  function manipulateData(data) {
+    employees.push(...data)
+  }
+
+  /**
+   * Render employee data into table.
+   * @param {Array} data 
+   */
+  function renderData(data) {
+    table.innerHTML = ""
+    data.forEach((employee, index) => {
+      if (index >= startIndex && index <= endIndex ) {
+        const row = `
+        <tr>
+          <td class="p-2 border"><div class="flex items-center justify-center"><img src="${API_URL + employee.picture}" alt="${employee.name}" height="64" width="64"></div></td>
+          <td class="p-2 border">${employee.id}</td>
+          <td class="p-2 border">${employee.name}</td>
+          <td class="p-2 border">${employee.email}</td>
+          <td class="p-2 border text-center">${employee.start_date}</td>
+          <td class="py-2 px-4 border"><div class="flex items-center justify-between"><span>$</span>${employee.salary}</div></td>
+          <td class="p-2 border">${employee.role}</td>
+          <td class="p-2 border">${employee.active ? '<div class="h-16 bg-green-500"></div>' : '<div class="h-16 bg-red-500"></div>'}</td>
+          <td class="p-2 border text-center">
+            <input class="py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800" onmouseup="updateData('${employee.id}')" type="button" value="UPD">
+            <input class="py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800" onmouseup="deleteData('${employee.id}')" type="button" value="DEL">
+          </td>
+        </tr>
+        `
+        table.innerHTML += row
+      }
+    })
+  }
+
+  /**
+   * Perform side effect when index.html rendering for the first time
+   */
+  window.onload = async () => {
+    const data = await fetchData(API_URL + "/employees")
+    manipulateData(data)
+    renderData(employees)
+    renderPages(employees.length)
+  }
+
+  /**
+   * Entry selection change actions
+   */
+  entryInput.addEventListener("change", e => {
+    const entry = e.target.value
+    startIndex = 0
+    endIndex = entry - 1
+    if (filterOn) {
+      renderData(filteredEmployees)
+      renderPages(filteredEmployees.length)
+    } else {
+      renderData(employees)
+      renderPages(employees.length)
     }
   })
-}
 
-window.onload = () => {
-  pagesFunction()
-  showData(data)
-}
-
-function pagesFunction() {
-  const totalPages = Math.ceil(length / size)
-  pages.innerHTML = ""
-  for (let index = 1; index <= totalPages; index++) {
-    const page = `
-    <button type="button" class="border rounded px-2 py-1 cursor-pointer" onclick="page(${index})">${index}</button>
-    `
-    pages.innerHTML += page
-  }
-}
-
-function page(pageNumber) {
-  indexStart = ((pageNumber * size) - size)
-  indexEnd = (pageNumber * size) - 1
-  pageNow = pageNumber
-  showData(data)
-}
-
-function prevPage() {
-  if (pageNow !== 1) {
-    pageNow -= 1
-    page(pageNow)
-  }
-}
-
-function nextPage() {
-  if (pageNow !== Math.ceil(length / size)) {
-    pageNow += 1
-    page(pageNow)
-  }
-}
-
-function deleteData(index) {
-  data.splice(index, 1)
-  showData(data)
-}
-
-picture.addEventListener("change", e => {
-  if (picture.files[0].size < 1000000) {
-    const fileReader = new FileReader()
-    fileReader.onload = f => {
-      const imgURL = f.target.result
-      pictureFrame.src = imgURL
+  /**
+   * Search input actions
+   */
+  searchInput.addEventListener("input", e => {
+    const term = e.target.value.toLowerCase()
+    filteredEmployees.length = 0
+    startIndex = 0
+    if (term !== null || term !== "") {
+      filterOn = true
+      filteredEmployees.push(...employees.filter(employee => employee.id.toLowerCase().includes(term) || employee.name.toLowerCase().includes(term) || employee.email.toLowerCase().includes(term) || employee.role.toLowerCase().includes(term)))
+      renderData(filteredEmployees)
+      renderPages(filteredEmployees.length)
+    } else {
+      filterOn = false
+      renderData(employees)
     }
-    fileReader.readAsDataURL(picture.files[0])
-  } else {
-    pictureFrame.src = "./public/avatar.png"
-    picture.value = null
-    alert("Too big")
+  })
+
+  /**
+   * Delete data based on ID
+   * @param {string} id 
+   */
+  window.deleteData = async (id) => {
+    try {
+      alert(id)
+      // const res = await fetch(API_URL + `/employees/${id}`, { method: "DELETE" })
+      // console.log(res)
+      // const data = await res.json()
+      // console.log(data)
+      // renderData(employees)
+    } catch (error) {
+      console.log(error)
+      alert("error")
+    }
   }
-})
 
-function addData() {
-  const name = document.querySelector("#name")
-  const age = document.querySelector("#age")
-  const email = document.querySelector("#email")
-  const newData = {
-    name: name.value,
-    picture: pictureFrame.src,
-    age: age.value,
-    email: email.value,
+  /**
+   * Render pagination number
+   * @param {number} dataLength 
+   */
+  function renderPages(dataLength) {
+    const totalPages = Math.ceil(dataLength / entryInput.value)
+    pagesInput.innerHTML = ""
+    for (let index = 1; index <= totalPages; index++) {
+      const row = `<input class="border rounded px-2 py-1 cursor-pointer" type="button" value="${index}" id="page-${index}" onclick="page(${index})">`
+      pagesInput.innerHTML += row
+    }
+    currentPage = 1
+    document.querySelector("#page-" + currentPage).classList.remove("text-white")
+    document.querySelector("#page-" + currentPage).classList.add("bg-button3", "text-black")
+    prevPage.classList.remove("text-white", "cursor-pointer")
+    prevPage.classList.add("text-gray-400", "cursor-not-allowed")
+    if (dataLength / entryInput.value <= 1) {
+      nextPage.classList.remove("text-white", "cursor-pointer")
+      nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+    } else {
+      nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
+      nextPage.classList.add("text-white", "cursor-pointer")
+    }
   }
-  data.push(newData)
-  showData(data)
-  name.value = null
-  picture.value = null
-  pictureFrame.src = "./public/avatar.png"
-  age.value = null
-  email.value = null
-}
 
-function updateData(index) {
-  const newName = prompt("Name:", data[index].name)
-  const newAge = prompt("Age:", data[index].age)
-  const newEmail = prompt("Email:", data[index].email)
-  const newData = {
-    name: newName,
-    age: newAge,
-    email: newEmail
+  /**
+   * Set page-related variables and page-related elements
+   * @param {number} index 
+   */
+  window.page = (index) => {
+    if (index !== currentPage) {
+      startIndex = (index * entryInput.value) - entryInput.value
+      endIndex = (index * entryInput.value) - 1
+      document.querySelector("#page-" + currentPage).classList.add("text-white")
+      document.querySelector("#page-" + currentPage).classList.remove("bg-button3", "text-black")
+      currentPage = index
+      if (filterOn) {
+        renderData(filteredEmployees)
+        if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {
+          nextPage.classList.remove("text-white", "cursor-pointer")
+          nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+        } else {
+          nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
+          nextPage.classList.add("text-white", "cursor-pointer")
+        }
+      } else {
+        renderData(employees)
+        if (index >= Math.ceil(employees.length / entryInput.value)) {
+          nextPage.classList.remove("text-white", "cursor-pointer")
+          nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+        } else {
+          nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
+          nextPage.classList.add("text-white", "cursor-pointer")
+        }
+      }
+      document.querySelector("#page-" + currentPage).classList.remove("text-white")
+      document.querySelector("#page-" + currentPage).classList.add("bg-button3", "text-black")
+      if (index <= 1) {
+        prevPage.classList.remove("text-white", "cursor-pointer")
+        prevPage.classList.add("text-gray-400", "cursor-not-allowed")
+      } else {
+        if (prevPage.classList.contains("cursor-not-allowed")) {
+          prevPage.classList.remove("text-gray-400", "cursor-not-allowed")
+          prevPage.classList.add("text-white", "cursor-pointer")
+        }
+      }
+    }
   }
-  data[index] = newData
-  showData(data)
-}
 
-document.querySelector("#search").addEventListener("input", e => {
-  const value = e.target.value.toLowerCase()
-  if (value !== null || value !== "") {
-    const filteredData = data.filter(item => item.name.toLowerCase().includes(value) || item.email.toLowerCase().includes(value))
-    showData(filteredData)
-  } else {
-    showData(data)
-  }
-})
+  /**
+   * Previous page button actions
+   */
+  prevPage.addEventListener("mouseup", () => {
+    if (currentPage > 1) {
+      document.querySelector("#page-" + currentPage).classList.add("text-white")
+      document.querySelector("#page-" + currentPage).classList.remove("bg-button3", "text-black")
+      page(currentPage - 1)
+    }
+  })
 
-entries.addEventListener("change", () => {
-  const value = parseInt(entries.value)
-  indexStart = 0
-  size = value
-  indexEnd = size - 1
-  pagesFunction()
-  showData(data)
-})
+  /**
+   * Next page button actions
+   */
+  nextPage.addEventListener("mouseup", () => {
+    const dataLength = filterOn ? filteredEmployees.length : employees.length
+    if (currentPage < Math.ceil(dataLength / entryInput.value)) {
+      document.querySelector("#page-" + currentPage).classList.add("text-white")
+      document.querySelector("#page-" + currentPage).classList.remove("bg-button3", "text-black")
+      page(currentPage + 1)
+    }
+  })
 
-function openModal() {
-  modal.classList.remove("hidden")
-}
+  /**
+   * Open modal button actions
+   */
+  openModal.addEventListener("mouseup", () => {
+    modal.classList.remove("hidden")
+    modal.classList.add("flex")
+  })
 
-function closeModal() {
-  modal.classList.add("hidden")
-}
+  /**
+   * Close modal button actions
+   */
+  closeModal.addEventListener("mouseup", () => {
+    modal.classList.remove("flex")
+    modal.classList.add("hidden")
+  })
+})()
 
-// function addModal() {
-//   const div =
-//   `<div id="modal" class="fixed top-0 left-0 h-full w-full flex items-center justify-center no-doc-scroll">
-//     <div class="bg-gray-800 shadow-lg rounded p-8 flex flex-col gap-8">
-//       <button class="text-gray-400 px-2 py-1 ml-auto border-1 border-gray-400 cursor-pointer" onclick="closeModal()">X</button>
-//       <div class="text-white flex flex-col gap-4">
-//         <label class="flex flex-col">
-//           Name:
-//           <input type="text" id="name" class="bg-gray-800 border-2">
-//         </label>
-//         <label class="flex flex-col">
-//           Age:
-//           <input type="number" id="age" class="bg-gray-800 border-2">
-//         </label>
-//         <label class="flex flex-col">
-//           Email:
-//           <input type="email" id="email" class="bg-gray-800 border-2">
-//         </label>
-//       </div>
-//       <button type="button" class="bg-blue-600 rounded px-2 py-1 cursor-pointer" onclick="addData()">Add</button
-//     </div>
-//   </div>`
-//   container.innerHTML += div
-// }
+// const container = document.querySelector("#container")
+// const table = document.querySelector("#data")
+// const entries = document.querySelector("#entries")
+// const pages = document.querySelector("#pages")
+// const picture = document.querySelector("#picture")
+// const pictureFrame = document.querySelector("#pictureFrame")
+// const modal = document.querySelector("#modal")
 
-// let items = [
-//   { name: "faris" }
-// ];
+// let length = data.length
+// let indexStart = 0
+// let indexEnd = 2
+// let size = parseInt(entries.value)
+// let pageNow = 1
 
-// function createItem() {
-//   const nameInput = document.getElementById('name');
-//   const name = nameInput.value.trim();
-//   if (name) {
-//     items.push({ name });
-//     nameInput.value = '';
-//     renderItems();
+// picture.addEventListener("change", e => {
+//   if (picture.files[0].size < 1000000) {
+//     const fileReader = new FileReader()
+//     fileReader.onload = f => {
+//       const imgURL = f.target.result
+//       pictureFrame.src = imgURL
+//     }
+//     fileReader.readAsDataURL(picture.files[0])
+//   } else {
+//     pictureFrame.src = "./public/avatar.png"
+//     picture.value = null
+//     alert("Too big")
 //   }
-// }
-
-// function deleteItem(index) {
-//   items.splice(index, 1);
-//   renderItems();
-// }
-
-// function updateItem(index) {
-//   const newName = prompt("Enter new name:", items[index].name);
-//   if (newName !== null && newName.trim() !== "") {
-//     items[index].name = newName.trim();
-//     renderItems();
-//   }
-// }
+// })
 
 // function renderItems() {
 //   const itemList = document.getElementById('itemList');
@@ -238,5 +283,3 @@ function closeModal() {
 //     itemList.appendChild(li);
 //   });
 // }
-
-// renderItems()
