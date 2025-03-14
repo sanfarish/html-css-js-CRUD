@@ -10,8 +10,10 @@
   const prevPage = document.querySelector("#previous")
   const nextPage = document.querySelector("#next")
   const openModal = document.querySelector("#open-modal")
-  const closeModal = document.querySelector("#close-modal")
   const modal = document.querySelector("#modal")
+  const closeModal = document.querySelector("#close-modal")
+  const pictureContainer = document.querySelector("#picture-container")
+  const pictureCaption = document.querySelector("#picture-caption")
 
   let startIndex = 0
   let endIndex = entryInput.value - 1
@@ -24,9 +26,13 @@
    * @returns 
    */
   async function fetchData(url) {
-    const res = await fetch(url)
-    const data = await res.json()
-    return data
+    try {
+      const res = await fetch(url)
+      const data = await res.json()
+      return data
+    } catch (error) {
+      throw error
+    }
   }
 
   /**
@@ -43,37 +49,53 @@
    */
   function renderData(data) {
     table.innerHTML = ""
-    data.forEach((employee, index) => {
-      if (index >= startIndex && index <= endIndex ) {
-        const row = `
-        <tr>
-          <td class="p-2 border"><div class="flex items-center justify-center"><img src="${API_URL + employee.picture}" alt="${employee.name}" height="64" width="64"></div></td>
-          <td class="p-2 border">${employee.id}</td>
-          <td class="p-2 border">${employee.name}</td>
-          <td class="p-2 border">${employee.email}</td>
-          <td class="p-2 border text-center">${employee.start_date}</td>
-          <td class="py-2 px-4 border"><div class="flex items-center justify-between"><span>$</span>${employee.salary}</div></td>
-          <td class="p-2 border">${employee.role}</td>
-          <td class="p-2 border">${employee.active ? '<div class="h-16 bg-green-500"></div>' : '<div class="h-16 bg-red-500"></div>'}</td>
-          <td class="p-2 border text-center">
-            <input class="py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800" onmouseup="updateData('${employee.id}')" type="button" value="UPD">
-            <input class="py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800" onmouseup="deleteData('${employee.id}')" type="button" value="DEL">
-          </td>
-        </tr>
-        `
-        table.innerHTML += row
-      }
-    })
+    if (data.length !== 0) {
+      data.forEach((employee, index) => {
+        if (index >= startIndex && index <= endIndex ) {
+          const row = `
+          <tr>
+            <td class="p-2 border"><div class="flex items-center justify-center"><img src="${API_URL + employee.picture}" alt="${employee.name}" height="64" width="64"></div></td>
+            <td class="p-2 border">${employee.id}</td>
+            <td class="p-2 border">${employee.name}</td>
+            <td class="p-2 border">${employee.email}</td>
+            <td class="p-2 border text-center">${employee.start_date}</td>
+            <td class="py-2 px-4 border"><div class="flex items-center justify-between"><span>$</span>${employee.salary}</div></td>
+            <td class="p-2 border">${employee.role}</td>
+            <td class="p-2 border text-center">${employee.active ? '<span class="font-semibold text-green-400">Active</span>' : '<span class="font-semibold text-red-400">Inactive</span>'}</td>
+            <td class="p-2 border text-center">
+              <input class="py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800" onmouseup="updateData('${employee.id}')" type="button" value="UPD">
+              <input class="py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800" onmouseup="deleteData('${employee.id}')" type="button" value="DEL">
+            </td>
+          </tr>
+          `
+          table.innerHTML += row
+        }
+      })
+    } else {
+      const empty = `
+      <tr>
+        <td colspan="9" class="h-64 text-center">empty data</td>
+      </tr>
+      `
+      table.innerHTML += empty
+    }
   }
 
   /**
    * Perform side effect when index.html rendering for the first time
    */
   window.onload = async () => {
-    const data = await fetchData(API_URL + "/employees")
-    manipulateData(data)
-    renderData(employees)
-    renderPages(employees.length)
+    try {
+      const data = await fetchData(API_URL + "/employees")
+      manipulateData(data)
+      renderData(employees)
+      renderPages(employees.length)
+    } catch (error) {
+      console.log(error)
+      alert(error.message)
+      renderData(employees)
+      renderPages(employees.length)
+    }
   }
 
   /**
@@ -133,23 +155,25 @@
    * @param {number} dataLength 
    */
   function renderPages(dataLength) {
-    const totalPages = Math.ceil(dataLength / entryInput.value)
-    pagesInput.innerHTML = ""
-    for (let index = 1; index <= totalPages; index++) {
-      const row = `<input class="border rounded px-2 py-1 cursor-pointer" type="button" value="${index}" id="page-${index}" onclick="page(${index})">`
-      pagesInput.innerHTML += row
-    }
-    currentPage = 1
-    document.querySelector("#page-" + currentPage).classList.remove("text-white")
-    document.querySelector("#page-" + currentPage).classList.add("bg-button3", "text-black")
-    prevPage.classList.remove("text-white", "cursor-pointer")
-    prevPage.classList.add("text-gray-400", "cursor-not-allowed")
-    if (dataLength / entryInput.value <= 1) {
-      nextPage.classList.remove("text-white", "cursor-pointer")
-      nextPage.classList.add("text-gray-400", "cursor-not-allowed")
-    } else {
-      nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
-      nextPage.classList.add("text-white", "cursor-pointer")
+    if (dataLength !== 0) {
+      const totalPages = Math.ceil(dataLength / entryInput.value)
+      pagesInput.innerHTML = ""
+      for (let index = 1; index <= totalPages; index++) {
+        const row = `<input class="border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600" type="button" value="${index}" id="page-${index}" onmouseup="page(${index})">`
+        pagesInput.innerHTML += row
+      }
+      currentPage = 1
+      document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+      document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
+      prevPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+      prevPage.classList.add("text-gray-400", "cursor-not-allowed")
+      if (dataLength / entryInput.value <= 1) {
+        nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+        nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+      } else {
+        nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
+        nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+      }
     }
   }
 
@@ -161,37 +185,37 @@
     if (index !== currentPage) {
       startIndex = (index * entryInput.value) - entryInput.value
       endIndex = (index * entryInput.value) - 1
-      document.querySelector("#page-" + currentPage).classList.add("text-white")
-      document.querySelector("#page-" + currentPage).classList.remove("bg-button3", "text-black")
+      document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
+      document.querySelector("#page-" + currentPage).classList.add("text-white", "hover:bg-gray-800", "active:bg-gray-600")
       currentPage = index
       if (filterOn) {
         renderData(filteredEmployees)
         if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {
-          nextPage.classList.remove("text-white", "cursor-pointer")
+          nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
           nextPage.classList.add("text-gray-400", "cursor-not-allowed")
         } else {
           nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
-          nextPage.classList.add("text-white", "cursor-pointer")
+          nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
         }
       } else {
         renderData(employees)
         if (index >= Math.ceil(employees.length / entryInput.value)) {
-          nextPage.classList.remove("text-white", "cursor-pointer")
+          nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
           nextPage.classList.add("text-gray-400", "cursor-not-allowed")
         } else {
           nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
-          nextPage.classList.add("text-white", "cursor-pointer")
+          nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
         }
       }
-      document.querySelector("#page-" + currentPage).classList.remove("text-white")
-      document.querySelector("#page-" + currentPage).classList.add("bg-button3", "text-black")
+      document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+      document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
       if (index <= 1) {
-        prevPage.classList.remove("text-white", "cursor-pointer")
+        prevPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
         prevPage.classList.add("text-gray-400", "cursor-not-allowed")
       } else {
         if (prevPage.classList.contains("cursor-not-allowed")) {
           prevPage.classList.remove("text-gray-400", "cursor-not-allowed")
-          prevPage.classList.add("text-white", "cursor-pointer")
+          prevPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
         }
       }
     }
@@ -202,8 +226,8 @@
    */
   prevPage.addEventListener("mouseup", () => {
     if (currentPage > 1) {
+      document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
       document.querySelector("#page-" + currentPage).classList.add("text-white")
-      document.querySelector("#page-" + currentPage).classList.remove("bg-button3", "text-black")
       page(currentPage - 1)
     }
   })
@@ -214,8 +238,8 @@
   nextPage.addEventListener("mouseup", () => {
     const dataLength = filterOn ? filteredEmployees.length : employees.length
     if (currentPage < Math.ceil(dataLength / entryInput.value)) {
+      document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
       document.querySelector("#page-" + currentPage).classList.add("text-white")
-      document.querySelector("#page-" + currentPage).classList.remove("bg-button3", "text-black")
       page(currentPage + 1)
     }
   })
@@ -225,14 +249,14 @@
    */
   openModal.addEventListener("mouseup", () => {
     modal.classList.remove("hidden")
-    modal.classList.add("flex")
+    modal.classList.add("flex", "no-doc-scroll")
   })
 
   /**
    * Close modal button actions
    */
   closeModal.addEventListener("mouseup", () => {
-    modal.classList.remove("flex")
+    modal.classList.remove("flex", "no-doc-scroll")
     modal.classList.add("hidden")
   })
 })()
@@ -274,10 +298,10 @@
 //     li.textContent = item.name;
 //     const deleteButton = document.createElement('button');
 //     deleteButton.textContent = 'Delete';
-//     deleteButton.onclick = () => deleteItem(index);
+//     deleteButton.mouseupclick = () => deleteItem(index);
 //     const updateButton = document.createElement('button');
 //     updateButton.textContent = 'Update';
-//     updateButton.onclick = () => updateItem(index);
+//     updateButton.mouseupclick = () => updateItem(index);
 //     li.appendChild(deleteButton);
 //     li.appendChild(updateButton);
 //     itemList.appendChild(li);
