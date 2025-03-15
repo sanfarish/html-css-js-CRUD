@@ -9,15 +9,18 @@
 * Entry selection to manage employee records efficiently
 * Filter employees by ID, name, email or role to find employees quickly
 * Pagination for easy navigation through employee records
+* Modal display for easy access of adding employee
+* Quick actions button to delete employee
+* Upload picture of employees and store it to json-server (as base64)
 
 ## Getting ready
 
-1. Make sure your device have already installed Node.js and browser.
+1. Make sure your device have already installed Node.js and a browser.
 2. Clone this repository and open terminal inside this repo folder.
-3. Run `npm i` on your terminal to update modules.
+3. Run `npm i` on your terminal to install modules.
 4. Rename `db.json.example` to `db.json`.
 5. Run `npm start` on your terminal to start server, do not close terminal.
-6. Open `index.html` file into browser.
+6. Open `index.html` file into a browser.
 7. You're good to go!
 
 ## Screenshots
@@ -29,11 +32,11 @@
 
 ### UI related
 
-* Modal to create / update data
-* Fewer data to shown for responsiveness, add detail button to compensate
+1. Add responsiveness by showing fewer data
+2. Compensate fewer data shown by adding detail button
+3. Loading animation
 
 ### CRUD related
 
-* Delete functionality
-* Function to create / update data
-* Form validation on creating / updating data
+1. Function to update data
+2. Sanitise input

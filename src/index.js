@@ -1,6 +1,7 @@
 (() => {
   const API_URL = "http://localhost:3000"
   const employees = []
+  const pictures = []
   const filteredEmployees = []
 
   const table = document.querySelector("#data")
@@ -13,12 +14,14 @@
   const modal = document.querySelector("#modal")
   const closeModal = document.querySelector("#close-modal")
   const pictureContainer = document.querySelector("#picture-container")
-  const pictureCaption = document.querySelector("#picture-caption")
+  const pictureInput = document.querySelector("#picture")
+  const formInput = document.querySelector("#form")
 
   let startIndex = 0
   let endIndex = entryInput.value - 1
   let currentPage = 1
   let filterOn = false
+  let pictureData = "default"
 
   /**
    * Fetch data form server.
@@ -36,11 +39,12 @@
   }
 
   /**
-   * Fill "employees" array with data.
+   * Fill array with data.
    * @param {Array} data 
+   * @param {Array} array 
    */
-  function manipulateData(data) {
-    employees.push(...data)
+  function manipulateData(data, array) {
+    array.push(...data)
   }
 
   /**
@@ -52,19 +56,22 @@
     if (data.length !== 0) {
       data.forEach((employee, index) => {
         if (index >= startIndex && index <= endIndex ) {
+          const pictureArr = pictures.filter(pic => pic.id === employee.picture)
+          const pictureObj = pictureArr[0]
+          const pictureSource = pictureObj.picture
           const row = `
           <tr>
-            <td class="p-2 border"><div class="flex items-center justify-center"><img src="${API_URL + employee.picture}" alt="${employee.name}" height="64" width="64"></div></td>
+            <td class="p-2 border"><div class="flex items-center justify-center"><img src="${pictureSource}" alt="${employee.name}" height="64" width="64"></div></td>
             <td class="p-2 border">${employee.id}</td>
             <td class="p-2 border">${employee.name}</td>
             <td class="p-2 border">${employee.email}</td>
-            <td class="p-2 border text-center">${employee.start_date}</td>
+            <td class="p-2 border text-center">${employee.date}</td>
             <td class="py-2 px-4 border"><div class="flex items-center justify-between"><span>$</span>${employee.salary}</div></td>
             <td class="p-2 border">${employee.role}</td>
             <td class="p-2 border text-center">${employee.active ? '<span class="font-semibold text-green-400">Active</span>' : '<span class="font-semibold text-red-400">Inactive</span>'}</td>
             <td class="p-2 border text-center">
               <input class="py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800" onmouseup="updateData('${employee.id}')" type="button" value="UPD">
-              <input class="py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800" onmouseup="deleteData('${employee.id}')" type="button" value="DEL">
+              <input class="py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800" onmouseup="deleteData('${employee.id}', '${employee.picture}')" type="button" value="DEL">
             </td>
           </tr>
           `
@@ -86,13 +93,14 @@
    */
   window.onload = async () => {
     try {
-      const data = await fetchData(API_URL + "/employees")
-      manipulateData(data)
+      const employeeData = await fetchData(API_URL + "/employees")
+      const pictureData = await fetchData(API_URL + "/pictures")
+      manipulateData(employeeData, employees)
+      manipulateData(pictureData, pictures)
       renderData(employees)
       renderPages(employees.length)
     } catch (error) {
       console.log(error)
-      alert(error.message)
       renderData(employees)
       renderPages(employees.length)
     }
@@ -133,20 +141,31 @@
   })
 
   /**
-   * Delete data based on ID
-   * @param {string} id 
+   * Delete data based on data id
+   * @param {string} dataID 
+   * @param {string} picID 
    */
-  window.deleteData = async (id) => {
+  window.deleteData = async (dataID, picID) => {
     try {
-      alert(id)
-      // const res = await fetch(API_URL + `/employees/${id}`, { method: "DELETE" })
-      // console.log(res)
-      // const data = await res.json()
-      // console.log(data)
-      // renderData(employees)
+      const employeeResponse = await fetch(API_URL + "/employees/" + dataID, { method: "DELETE" })
+      const employeeJson = await employeeResponse.json()
+      const deletedEmployees = employees.filter(employee => employee.id !== employeeJson.id)
+      employees.length = 0
+      manipulateData(deletedEmployees, employees)
+      if (picID !== "default") {
+        const picResponse = await fetch(API_URL + "/pictures/" + picID, { method: "DELETE" })
+        const picJson = await picResponse.json()
+        const deletedPictures = pictures.filter(pic => pic.id !== picJson.id)
+        pictures.length = 0
+        manipulateData(deletedPictures, pictures)
+      }
+      startIndex = 0
+      endIndex = entryInput.value - 1
+      renderData(employees)
+      renderPages(employees.length)
     } catch (error) {
       console.log(error)
-      alert("error")
+      alert(error.message)
     }
   }
 
@@ -188,6 +207,8 @@
       document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
       document.querySelector("#page-" + currentPage).classList.add("text-white", "hover:bg-gray-800", "active:bg-gray-600")
       currentPage = index
+      document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+      document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
       if (filterOn) {
         renderData(filteredEmployees)
         if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {
@@ -207,8 +228,6 @@
           nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
         }
       }
-      document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
-      document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
       if (index <= 1) {
         prevPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
         prevPage.classList.add("text-gray-400", "cursor-not-allowed")
@@ -259,51 +278,78 @@
     modal.classList.remove("flex", "no-doc-scroll")
     modal.classList.add("hidden")
   })
+
+  /**
+   * Picture input change actions
+   */
+  pictureInput.addEventListener("change", e => {
+    if (pictureInput.files[0] && pictureInput.files[0].size < 1000000) {
+      const fileReader = new FileReader()
+      fileReader.readAsDataURL(pictureInput.files[0])
+      fileReader.onload = f => {
+        pictureData = f.target.result
+        pictureContainer.src = pictureData
+      }
+    } else {
+      pictureData = "default"
+      pictureContainer.src = "http://127.0.0.1:3000/avatar.png"
+      pictureInput.value = null
+      alert("image too big")
+    }
+  })
+
+  /**
+   * Submit button actions
+   */
+  formInput.addEventListener("submit", async e => {
+    e.preventDefault()
+    try {
+  
+      const formData = new FormData(formInput)
+  
+      formData.delete("picture")
+      const picID = Math.random().toString(36).slice(2, 12)
+      if (pictureData !== "default") {
+        formData.append("picture", picID)
+      } else {
+        formData.append("picture", pictureData)
+      }
+  
+      const id = Math.random().toString(36).slice(2, 12)
+      formData.append("id", id)
+      formData.append("active", true)
+      
+      const newEmployee = Object.fromEntries(formData)
+
+      if (pictureData !== "default") {
+        const newPic = {
+          id: picID,
+          picture: pictureData
+        }
+        const picResponse = await fetch(API_URL + "/pictures", {
+          method: "post",
+          body: JSON.stringify(newPic)
+        })
+        const picJson = await picResponse.json()
+        manipulateData([picJson], pictures)
+      }
+
+      const employeeResponse = await fetch(API_URL + "/employees", {
+        method: "POST",
+        body: JSON.stringify(newEmployee)
+      })
+      const employeeJson = await employeeResponse.json()
+      manipulateData([employeeJson], employees)
+
+      modal.classList.remove("flex", "no-doc-scroll")
+      modal.classList.add("hidden")
+      startIndex = 0
+      endIndex = entryInput.value - 1
+      renderData(employees)
+      renderPages(employees.length)
+    } catch (error) {
+      console.log(error)
+      alert(error.message)
+    }
+  })
 })()
-
-// const container = document.querySelector("#container")
-// const table = document.querySelector("#data")
-// const entries = document.querySelector("#entries")
-// const pages = document.querySelector("#pages")
-// const picture = document.querySelector("#picture")
-// const pictureFrame = document.querySelector("#pictureFrame")
-// const modal = document.querySelector("#modal")
-
-// let length = data.length
-// let indexStart = 0
-// let indexEnd = 2
-// let size = parseInt(entries.value)
-// let pageNow = 1
-
-// picture.addEventListener("change", e => {
-//   if (picture.files[0].size < 1000000) {
-//     const fileReader = new FileReader()
-//     fileReader.onload = f => {
-//       const imgURL = f.target.result
-//       pictureFrame.src = imgURL
-//     }
-//     fileReader.readAsDataURL(picture.files[0])
-//   } else {
-//     pictureFrame.src = "./public/avatar.png"
-//     picture.value = null
-//     alert("Too big")
-//   }
-// })
-
-// function renderItems() {
-//   const itemList = document.getElementById('itemList');
-//   itemList.innerHTML = '';
-//   items.forEach((item, index) => {
-//     const li = document.createElement('li');
-//     li.textContent = item.name;
-//     const deleteButton = document.createElement('button');
-//     deleteButton.textContent = 'Delete';
-//     deleteButton.mouseupclick = () => deleteItem(index);
-//     const updateButton = document.createElement('button');
-//     updateButton.textContent = 'Update';
-//     updateButton.mouseupclick = () => updateItem(index);
-//     li.appendChild(deleteButton);
-//     li.appendChild(updateButton);
-//     itemList.appendChild(li);
-//   });
-// }

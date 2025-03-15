@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 @layer base {
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
@@ -8,4 +10,13 @@
 
 :root:has(.no-doc-scroll) {
   overflow:hidden;
+}
+
+@theme {
+  --color-bg1: #283848;
+  --color-bg2: #FF6262;
+  --color-bg3: #225588;
+  --color-button1: #FFD500;
+  --color-button2: #FFF000;
+  --color-button3: #FFBA00;
 }
