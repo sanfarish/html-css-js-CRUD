@@ -283,18 +283,24 @@
    * Picture input change actions
    */
   pictureInput.addEventListener("change", e => {
-    if (pictureInput.files[0] && pictureInput.files[0].size < 1000000) {
-      const fileReader = new FileReader()
-      fileReader.readAsDataURL(pictureInput.files[0])
-      fileReader.onload = f => {
-        pictureData = f.target.result
-        pictureContainer.src = pictureData
+    if (e.target.files[0]) {
+      if (e.target.files[0].size < 1000000) {
+        const fileReader = new FileReader()
+        fileReader.readAsDataURL(e.target.files[0])
+        fileReader.onload = f => {
+          pictureData = f.target.result
+          pictureContainer.src = pictureData
+        }
+      } else {
+        pictureData = "default"
+        pictureContainer.src = "avatar.png"
+        pictureInput.value = null
+        alert("image too big")
       }
     } else {
       pictureData = "default"
       pictureContainer.src = "avatar.png"
       pictureInput.value = null
-      alert("image too big")
     }
   })
 
