@@ -20,7 +20,7 @@
 3. Run `npm i` on your terminal to install modules.
 4. Rename `db.json.example` to `db.json`.
 5. Run `npm start` on your terminal to start server, do not close terminal.
-6. Open `index.html` file into a browser.
+6. Open `public/index.html` file into a browser.
 7. You're good to go!
 
 ## Screenshots

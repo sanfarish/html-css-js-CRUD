@@ -292,7 +292,7 @@
       }
     } else {
       pictureData = "default"
-      pictureContainer.src = "http://127.0.0.1:3000/avatar.png"
+      pictureContainer.src = "avatar.png"
       pictureInput.value = null
       alert("image too big")
     }
