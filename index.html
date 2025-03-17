@@ -1,137 +1,228 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Employee Management System</title>
-  <link rel="stylesheet" href="src/output.css">
-</head>
-<body>
-  <header class="bg-bg2 h-16 flex items-center justify-center">
-    <h1 class="text-2xl">Employee Management System</h1>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee Management System</title>
+    <link rel="stylesheet" href="src/output.css" />
+  </head>
+  <body>
+    <header class="bg-bg2 flex h-16 items-center justify-center">
+      <h1 class="text-2xl">Employee Management System</h1>
+    </header>
 
-  <main class="bg-bg1 flex items-center justify-center py-8 px-16">
-
-    <!-- Main Card -->
-    <div class="bg-bg3 h-full w-full p-8 shadow-xl rounded-lg flex flex-col gap-4">
-
-      <!-- Card Header 1 -->
-      <div class="flex items-center justify-between">
-        <label class="text-white flex items-center gap-2" for="entries">
-          Show
-          <select class="py-1 px-1 border rounded cursor-pointer" name="entries" id="entries">
-            <option class="text-black" value="2" selected>2</option>
-            <option class="text-black" value="3">3</option>
-            <option class="text-black" value="5">5</option>
-          </select>
-          entries
-        </label>
-
-        <label class="text-white flex items-center gap-2" for="search">
-          Filter: 
-          <input class="grow py-1 px-2 border rounded" type="text" name="search" id="search" placeholder="ID / Name / Email / Role">
-        </label>
-      </div>
-
-      <!-- Card Header 2 -->
-      <div class="flex items-center">
-        <input class="mr-auto py-2 px-4 font-semibold rounded cursor-pointer bg-button1 hover:bg-button2 active:bg-button3" type="button" value="Add Employee" id="open-modal">
-      </div>
-
-      <table class="text-white border-collapse border table-fixed">
-        <thead class="uppercase">
-          <tr class="text-left">
-            <th scope="col" class="py-2 px-4 border text-center">Picture</th>
-            <th scope="col" class="py-2 px-4 border">ID</th>
-            <th scope="col" class="py-2 px-4 border">Name</th>
-            <th scope="col" class="py-2 px-4 border">Email</th>
-            <th scope="col" class="py-2 px-4 border text-center">Start Date</th>
-            <th scope="col" class="py-2 px-4 border text-center">Salary</th>
-            <th scope="col" class="py-2 px-4 border">Role</th>
-            <th scope="col" class="py-2 px-4 border text-center">Status</th>
-            <th scope="col" class="py-2 px-4 border text-center">Actions</th>
-          </tr>
-        </thead>
-
-        <!-- Main Data Table -->
-        <tbody id="data"></tbody>
-      </table>
-
-      <!-- Pagination -->
-      <div class="text-white flex justify-center gap-4">
-        <input class="border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600" type="button" value="Previous" id="previous">
-        <div class="flex gap-4" id="pages"></div>
-        <input class="border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600" type="button" value="Next" id="next">
-      </div>
-    </div>
-  </main>
-
-  <footer class="bg-bg2 h-16 flex items-center justify-center">
-    <span>&copy; 2025 Copyright Faris Hasan</span>
-  </footer>
-
-  <!-- Modal -->
-  <section class="hidden fixed top-0 left-0 h-screen w-screen items-center justify-center backdrop-blur-xs" id="modal">
-
-    <!-- Modal Card -->
-    <div class="bg-gray-600 flex flex-col px-8 pb-8 pt-4 gap-4 shadow-xl rounded">
-
-      <!-- Close Button -->
-      <input class="font-bold ml-auto px-2 border-2 rounded-full cursor-pointer text-gray-400 hover:text-gray-200 active:text-gray-300" type="button" value="X" id="close-modal">
-      
-      <form class="flex items-center gap-8" id="form">
-        <label class="text-white" for="picture">
-          <figure class="relative group">
-            <img class="rounded cursor-pointer" src="avatar.png" alt="avatar" width="128" height="128" id="picture-container">
-            <figcaption class="hidden group-hover:inline-block w-full py-1 opacity-75 absolute bottom-0 rounded-b text-center backdrop-brightness-50 cursor-pointer">Change Picture</figcaption>
-          </figure>
-          <input class="hidden" type="file" name="picture" id="picture">
-        </label>
-        
-        <div class="grow flex flex-col gap-4">
-          <label class="text-white text-lg flex justify-between" for="name">
-            <span class="w-24">Name:</span>
-            <input class="grow py-1 px-2 border rounded" type="text" name="name" id="name" placeholder="John Doe" required>
-          </label>
-          <label class="text-white text-lg flex justify-between" for="email">
-            <span class="w-24">Email:</span>
-            <input class="grow py-1 px-2 border rounded" type="email" name="email" id="email" placeholder="johndoe@mail.com" required>
-          </label>
-          <label class="text-white text-lg flex justify-between" for="date">
-            <span class="w-24">Start Date:</span>
-            <input class="grow py-1 px-2 border rounded" type="date" name="date" id="date" required>
-          </label>
-          <label class="text-white text-lg flex justify-between" for="salary">
-            <span class="w-24">Salary:</span>
-            <div class="grow pl-1 flex items-center gap-2">
-              $
-              <input class="grow py-1 px-2 border rounded" type="number" name="salary" id="salary" placeholder="500" required>
-            </div>
-          </label>
-          <label class="text-white text-lg flex justify-between" for="salary">
-            <span class="w-24">Role:</span>
-            <select class="grow py-1 px-2 border rounded cursor-pointer" name="role" id="role">
-              <option class="text-black" value="Business Analyst">Business Analyst</option>
-              <option class="text-black" value="Product Manager">Product Manager</option>
-              <option class="text-black" value="QA Engineer">QA Engineer</option>
-              <option class="text-black" value="Software Developer">Software Developer</option>
-              <option class="text-black" value="UI/UX Designer">UI/UX Designer</option>
+    <main class="bg-bg1 flex items-center justify-center px-16 py-8">
+      <!-- Main Card -->
+      <div
+        class="bg-bg3 flex h-full w-full flex-col gap-4 rounded-lg p-8 shadow-xl"
+      >
+        <!-- Card Header 1 -->
+        <div class="flex items-center justify-between">
+          <label class="flex items-center gap-2 text-white" for="entries">
+            Show
+            <select
+              class="cursor-pointer rounded border px-1 py-1"
+              name="entries"
+              id="entries"
+            >
+              <option class="text-black" value="2" selected>2</option>
+              <option class="text-black" value="3">3</option>
+              <option class="text-black" value="5">5</option>
             </select>
+            entries
           </label>
 
-          <span class="text-md text-gray-400">
-            * ID randomly generated automatically
-            <br>
-            ** Status always generated as "Active" to added employee
-          </span>
-          
-          <input class="py-2 px-4 text-lg font-semibold shadow rounded cursor-pointer bg-button1 hover:bg-button2 active:bg-button3" type="submit" value="Add Employee">
+          <label class="flex items-center gap-2 text-white" for="search">
+            Filter:
+            <input
+              class="grow rounded border px-2 py-1"
+              type="text"
+              name="search"
+              id="search"
+              placeholder="ID / Name / Email / Role"
+            />
+          </label>
         </div>
-      </form>
-    </div>
-  </section>
-  
-  <script type="module" src="src/index.js"></script>
-</body>
+
+        <!-- Card Header 2 -->
+        <div class="flex items-center">
+          <input
+            class="bg-button1 hover:bg-button2 active:bg-button3 mr-auto cursor-pointer rounded px-4 py-2 font-semibold"
+            type="button"
+            value="Add Employee"
+            id="open-modal"
+          />
+        </div>
+
+        <table class="table-fixed border-collapse border text-white">
+          <thead class="uppercase">
+            <tr class="text-left">
+              <th scope="col" class="border px-4 py-2 text-center">Picture</th>
+              <th scope="col" class="border px-4 py-2">ID</th>
+              <th scope="col" class="border px-4 py-2">Name</th>
+              <th scope="col" class="border px-4 py-2">Email</th>
+              <th scope="col" class="border px-4 py-2 text-center">
+                Start Date
+              </th>
+              <th scope="col" class="border px-4 py-2 text-center">Salary</th>
+              <th scope="col" class="border px-4 py-2">Role</th>
+              <th scope="col" class="border px-4 py-2 text-center">Status</th>
+              <th scope="col" class="border px-4 py-2 text-center">Actions</th>
+            </tr>
+          </thead>
+
+          <!-- Main Data Table -->
+          <tbody id="data"></tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="flex justify-center gap-4 text-white">
+          <input
+            class="cursor-pointer rounded border px-2 py-1 hover:bg-gray-800 active:bg-gray-600"
+            type="button"
+            value="Previous"
+            id="previous"
+          />
+          <div class="flex gap-4" id="pages"></div>
+          <input
+            class="cursor-pointer rounded border px-2 py-1 hover:bg-gray-800 active:bg-gray-600"
+            type="button"
+            value="Next"
+            id="next"
+          />
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-bg2 flex h-16 items-center justify-center">
+      <span>&copy; 2025 Copyright Faris Hasan</span>
+    </footer>
+
+    <!-- Modal -->
+    <section
+      class="fixed top-0 left-0 hidden h-screen w-screen items-center justify-center backdrop-blur-xs"
+      id="modal"
+    >
+      <!-- Modal Card -->
+      <div
+        class="flex flex-col gap-4 rounded bg-gray-600 px-8 pt-4 pb-8 shadow-xl"
+      >
+        <!-- Close Button -->
+        <input
+          class="ml-auto cursor-pointer rounded-full border-2 px-2 font-bold text-gray-400 hover:text-gray-200 active:text-gray-300"
+          type="button"
+          value="X"
+          id="close-modal"
+        />
+
+        <form class="flex items-center gap-8" id="form">
+          <label class="text-white" for="picture">
+            <figure class="group relative">
+              <img
+                class="cursor-pointer rounded"
+                src="avatar.png"
+                alt="avatar"
+                width="128"
+                height="128"
+                id="picture-container"
+              />
+              <figcaption
+                class="absolute bottom-0 hidden w-full cursor-pointer rounded-b py-1 text-center opacity-75 backdrop-brightness-50 group-hover:inline-block"
+              >
+                Change Picture
+              </figcaption>
+            </figure>
+            <input class="hidden" type="file" name="picture" id="picture" />
+          </label>
+
+          <div class="flex grow flex-col gap-4">
+            <label class="flex justify-between text-lg text-white" for="name">
+              <span class="w-24">Name:</span>
+              <input
+                class="grow rounded border px-2 py-1"
+                type="text"
+                name="name"
+                id="name"
+                placeholder="John Doe"
+                required
+              />
+            </label>
+            <label class="flex justify-between text-lg text-white" for="email">
+              <span class="w-24">Email:</span>
+              <input
+                class="grow rounded border px-2 py-1"
+                type="email"
+                name="email"
+                id="email"
+                placeholder="johndoe@mail.com"
+                required
+              />
+            </label>
+            <label class="flex justify-between text-lg text-white" for="date">
+              <span class="w-24">Start Date:</span>
+              <input
+                class="grow rounded border px-2 py-1"
+                type="date"
+                name="date"
+                id="date"
+                required
+              />
+            </label>
+            <label class="flex justify-between text-lg text-white" for="salary">
+              <span class="w-24">Salary:</span>
+              <div class="flex grow items-center gap-2 pl-1">
+                $
+                <input
+                  class="grow rounded border px-2 py-1"
+                  type="number"
+                  name="salary"
+                  id="salary"
+                  placeholder="500"
+                  required
+                />
+              </div>
+            </label>
+            <label class="flex justify-between text-lg text-white" for="salary">
+              <span class="w-24">Role:</span>
+              <select
+                class="grow cursor-pointer rounded border px-2 py-1"
+                name="role"
+                id="role"
+              >
+                <option class="text-black" value="Business Analyst">
+                  Business Analyst
+                </option>
+                <option class="text-black" value="Product Manager">
+                  Product Manager
+                </option>
+                <option class="text-black" value="QA Engineer">
+                  QA Engineer
+                </option>
+                <option class="text-black" value="Software Developer">
+                  Software Developer
+                </option>
+                <option class="text-black" value="UI/UX Designer">
+                  UI/UX Designer
+                </option>
+              </select>
+            </label>
+
+            <span class="text-md text-gray-400">
+              * ID randomly generated automatically
+              <br />
+              ** Status always generated as "Active" to added employee
+            </span>
+
+            <input
+              class="bg-button1 hover:bg-button2 active:bg-button3 cursor-pointer rounded px-4 py-2 text-lg font-semibold shadow"
+              type="submit"
+              value="Add Employee"
+            />
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <script type="module" src="src/index.js"></script>
+  </body>
 </html>
