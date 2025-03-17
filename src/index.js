@@ -293,13 +293,13 @@
         }
       } else {
         pictureData = "default"
-        pictureContainer.src = "avatar.png"
+        pictureContainer.src = "/avatar.png"
         pictureInput.value = null
         alert("image too big")
       }
     } else {
       pictureData = "default"
-      pictureContainer.src = "avatar.png"
+      pictureContainer.src = "/avatar.png"
       pictureInput.value = null
     }
   })

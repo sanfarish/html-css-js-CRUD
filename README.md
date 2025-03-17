@@ -16,12 +16,14 @@
 ## Getting ready
 
 1. Make sure your device have already installed Node.js and a browser.
-2. Clone this repository and open terminal inside this repo folder.
-3. Run `npm i` on your terminal to install modules.
-4. Rename `db.json.example` to `db.json`.
-5. Run `npm start` on your terminal to start server, do not close terminal.
-6. Open `public/index.html` file into a browser.
-7. You're good to go!
+2. Clone this repository via Git or download zip.
+3. Rename `db.json.example` to `db.json`.
+4. Open a terminal in the repo folder and run `npm i` to install modules, wait until it's done.
+5. Run `npm run build` to build client.
+6. Run `npm run preview` to preview built client, do not close terminal.
+7. Open another terminal and run `npm start` to start server, do not close terminal.
+8. Open `http://localhost:4173` onto your browser.
+9. You're good to go!
 
 ## Screenshots
 
