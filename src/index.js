@@ -79,12 +79,13 @@
         }
       })
     } else {
-      const empty = `
-      <tr>
-        <td colspan="9" class="h-64 text-center">empty data</td>
-      </tr>
-      `
-      table.innerHTML += empty
+      const tr = document.createElement("tr")
+      const td = document.createElement("td")
+      td.colSpan = 9
+      td.classList = "h-32 text-center"
+      td.textContent = "empty data"
+      tr.appendChild(td)
+      table.appendChild(tr)
     }
   }
 
@@ -178,8 +179,13 @@
       const totalPages = Math.ceil(dataLength / entryInput.value)
       pagesInput.innerHTML = ""
       for (let index = 1; index <= totalPages; index++) {
-        const row = `<input class="border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600" type="button" value="${index}" id="page-${index}" onmouseup="page(${index})">`
-        pagesInput.innerHTML += row
+        const input = document.createElement("input")
+        input.type = "button"
+        input.value = index
+        input.id = "page-" + index
+        input.addEventListener("mouseup", () => page(index))
+        input.classList = "border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600"
+        pagesInput.appendChild(input)
       }
       currentPage = 1
       document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
