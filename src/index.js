@@ -99,10 +99,11 @@
           tdSalary.classList = "py-2 px-4 border"
           const divSalary = document.createElement("div")
           divSalary.classList = "flex items-center justify-between"
-          const spanSalary = document.createElement("span")
-          spanSalary.textContent = "$"
-          divSalary.appendChild(spanSalary)
-          divSalary.textContent = employee.salary
+          const spanCurrency = document.createElement("span")
+          spanCurrency.textContent = "$"
+          const salaryValue = document.createTextNode(employee.salary)
+          divSalary.appendChild(spanCurrency)
+          divSalary.appendChild(salaryValue)
           tdSalary.appendChild(divSalary)
           tr.appendChild(tdSalary)
 
