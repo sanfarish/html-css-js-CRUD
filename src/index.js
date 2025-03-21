@@ -59,23 +59,86 @@
           const pictureArr = pictures.filter(pic => pic.id === employee.picture)
           const pictureObj = pictureArr[0]
           const pictureSource = pictureObj.picture
-          const row = `
-          <tr>
-            <td class="p-2 border"><div class="flex items-center justify-center"><img src="${pictureSource}" alt="${employee.name}" height="64" width="64"></div></td>
-            <td class="p-2 border">${employee.id}</td>
-            <td class="p-2 border">${employee.name}</td>
-            <td class="p-2 border">${employee.email}</td>
-            <td class="p-2 border text-center">${employee.date}</td>
-            <td class="py-2 px-4 border"><div class="flex items-center justify-between"><span>$</span>${employee.salary}</div></td>
-            <td class="p-2 border">${employee.role}</td>
-            <td class="p-2 border text-center">${employee.active ? '<span class="font-semibold text-green-400">Active</span>' : '<span class="font-semibold text-red-400">Inactive</span>'}</td>
-            <td class="p-2 border text-center">
-              <input class="py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800" onmouseup="updateData('${employee.id}')" type="button" value="UPD">
-              <input class="py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800" onmouseup="deleteData('${employee.id}', '${employee.picture}')" type="button" value="DEL">
-            </td>
-          </tr>
-          `
-          table.innerHTML += row
+
+          const tr = document.createElement("tr")
+
+          const tdPic = document.createElement("td")
+          tdPic.classList = "p-2 border"
+          const divPic = document.createElement("div")
+          divPic.classList = "flex items-center justify-center"
+          const imgPic = document.createElement("img")
+          imgPic.src = pictureSource
+          imgPic.alt = employee.name
+          imgPic.height = 64
+          imgPic.width = 64
+          divPic.appendChild(imgPic)
+          tdPic.appendChild(divPic)
+          tr.appendChild(tdPic)
+
+          const tdID = document.createElement("td")
+          tdID.classList = "p-2 border"
+          tdID.textContent = employee.id
+          tr.appendChild(tdID)
+
+          const tdName = document.createElement("td")
+          tdName.classList = "p-2 border"
+          tdName.textContent = employee.name
+          tr.appendChild(tdName)
+
+          const tdEmail = document.createElement("td")
+          tdEmail.classList = "p-2 border"
+          tdEmail.textContent = employee.email
+          tr.appendChild(tdEmail)
+
+          const tdDate = document.createElement("td")
+          tdDate.classList = "p-2 border text-center"
+          tdDate.textContent = employee.date
+          tr.appendChild(tdDate)
+
+          const tdSalary = document.createElement("td")
+          tdSalary.classList = "py-2 px-4 border"
+          const divSalary = document.createElement("div")
+          divSalary.classList = "flex items-center justify-between"
+          const spanSalary = document.createElement("span")
+          spanSalary.textContent = "$"
+          divSalary.appendChild(spanSalary)
+          divSalary.textContent = employee.salary
+          tdSalary.appendChild(divSalary)
+          tr.appendChild(tdSalary)
+
+          const tdRole = document.createElement("td")
+          tdRole.classList = "p-2 border"
+          tdRole.textContent = employee.role
+          tr.appendChild(tdRole)
+
+          const tdActive = document.createElement("td")
+          tdActive.classList = "p-2 border text-center"
+          const spanActive = document.createElement("span")
+          spanActive.classList = employee.active ? "font-semibold text-green-400" : "font-semibold text-red-400"
+          spanActive.textContent = employee.active ? "Active" : "Inactive"
+          tdActive.appendChild(spanActive)
+          tr.appendChild(tdActive)
+
+          const tdActions = document.createElement("td")
+          tdActions.classList = "p-2 border text-center"
+          
+          const inputUpdate = document.createElement("input")
+          inputUpdate.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800"
+          inputUpdate.type = "button"
+          inputUpdate.value = "UPD"
+          inputUpdate.onmouseup = () => updateData(employee.id)
+          inputUpdate.addEventListener("mouseup", () => updateData(employee.id))
+          tdActions.appendChild(inputUpdate)
+
+          const inputDelete = document.createElement("input")
+          inputDelete.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800"
+          inputDelete.type = "button"
+          inputDelete.value = "DEL"
+          inputDelete.addEventListener("mouseup", () => deleteData(employee.id, employee.picture))
+          tdActions.appendChild(inputDelete)
+
+          tr.appendChild(tdActions)
+          table.appendChild(tr)
         }
       })
     } else {
