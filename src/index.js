@@ -235,6 +235,54 @@
   }
 
   /**
+   * Update active "Previous" page button appearance
+   */
+  function activatePrevPage() {
+    prevPage.classList.remove("text-gray-400", "cursor-not-allowed")
+    prevPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+  }
+
+  /**
+   * Update inactive "Previous" page button appearance
+   */
+  function deactivatePrevPage() {
+    prevPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    prevPage.classList.add("text-gray-400", "cursor-not-allowed")
+  }
+
+  /**
+   * Update active "Next" page button appearance
+   */
+  function activateNextPage() {
+    nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
+    nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+  }
+
+  /**
+   * Update inactive "Next" page button appearance
+   */
+  function deactivateNextPage() {
+    nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+  }
+
+  /**
+   * Update active current page appearance
+   */
+  function activatePage() {
+    document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+    document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
+  }
+
+  /**
+   * Update inactive page appearance
+   */
+  function deactivatePage() {
+    document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
+    document.querySelector("#page-" + currentPage).classList.add("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+  }
+
+  /**
    * Render pagination number
    * @param {number} dataLength 
    */
@@ -252,16 +300,12 @@
         pagesInput.appendChild(input)
       }
       currentPage = 1
-      document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
-      document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
-      prevPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-      prevPage.classList.add("text-gray-400", "cursor-not-allowed")
+      activatePage()
+      deactivatePrevPage()
       if (dataLength / entryInput.value <= 1) {
-        nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-        nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+        deactivateNextPage()
       } else {
-        nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
-        nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+        activateNextPage()
       }
     }
   }
@@ -274,37 +318,29 @@
     if (index !== currentPage) {
       startIndex = (index * entryInput.value) - entryInput.value
       endIndex = (index * entryInput.value) - 1
-      document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
-      document.querySelector("#page-" + currentPage).classList.add("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+      deactivatePage()
       currentPage = index
-      document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
-      document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
+      activatePage()
       if (filterOn) {
         renderData(filteredEmployees)
         if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {
-          nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-          nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+          deactivateNextPage()
         } else {
-          nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
-          nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+          activateNextPage()
         }
       } else {
         renderData(employees)
         if (index >= Math.ceil(employees.length / entryInput.value)) {
-          nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-          nextPage.classList.add("text-gray-400", "cursor-not-allowed")
+          deactivateNextPage()
         } else {
-          nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
-          nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+          activateNextPage()
         }
       }
       if (index <= 1) {
-        prevPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-        prevPage.classList.add("text-gray-400", "cursor-not-allowed")
+        deactivatePrevPage()
       } else {
         if (prevPage.classList.contains("cursor-not-allowed")) {
-          prevPage.classList.remove("text-gray-400", "cursor-not-allowed")
-          prevPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+          activatePrevPage()
         }
       }
     }
@@ -315,8 +351,7 @@
    */
   prevPage.addEventListener("mouseup", () => {
     if (currentPage > 1) {
-      document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
-      document.querySelector("#page-" + currentPage).classList.add("text-white")
+      deactivatePage()
       page(currentPage - 1)
     }
   })
@@ -327,8 +362,7 @@
   nextPage.addEventListener("mouseup", () => {
     const dataLength = filterOn ? filteredEmployees.length : employees.length
     if (currentPage < Math.ceil(dataLength / entryInput.value)) {
-      document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
-      document.querySelector("#page-" + currentPage).classList.add("text-white")
+      deactivatePage()
       page(currentPage + 1)
     }
   })
