@@ -16,6 +16,11 @@
   const pictureContainer = document.querySelector("#picture-container")
   const pictureInput = document.querySelector("#picture")
   const formInput = document.querySelector("#form")
+  const nameInput = document.querySelector("#name")
+  const emailInput = document.querySelector("#email")
+  const dateInput = document.querySelector("#date")
+  const salaryInput = document.querySelector("#salary")
+  const roleInput = document.querySelector("#role")
 
   let startIndex = 0
   let endIndex = entryInput.value - 1
@@ -127,8 +132,7 @@
           inputUpdate.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800"
           inputUpdate.type = "button"
           inputUpdate.value = "UPD"
-          inputUpdate.onmouseup = () => updateData(employee.id)
-          inputUpdate.addEventListener("mouseup", () => updateData(employee.id))
+          inputUpdate.addEventListener("mouseup", () => updateModal(employee.id))
           tdActions.appendChild(inputUpdate)
 
           const inputDelete = document.createElement("input")
@@ -204,6 +208,27 @@
       renderData(employees)
     }
   })
+
+  /**
+   * Open modal with data to be updated
+   * @param {string} dataID 
+   */
+  window.updateModal = async (dataID) => {
+    const employee = employees.filter(employee => employee.id === dataID)[0]
+    const { name, email, date, salary, role, active, picture } = employee
+
+    const employeePic = pictures.filter(pic => pic.id === picture)[0]
+    pictureContainer.src = employeePic.picture
+
+    nameInput.value = name
+    emailInput.value = email
+    dateInput.value = date
+    salaryInput.value = salary
+    roleInput.value = role
+
+    modal.classList.remove("hidden")
+    modal.classList.add("flex", "no-doc-scroll")
+  }
 
   /**
    * Delete data based on data id
