@@ -1,13 +1,29 @@
 (() => {
-  const API_URL = "http://localhost:3000"
+  const EMPLOYEES_URL = "http://localhost:3000/employees"
+  const PICTURES_URL = "http://localhost:3000/pictures"
   const employees = []
   const pictures = []
-  const filteredEmployees = []
+  // const filteredEmployees = []
+
+  const vars = {
+    totalCount: 0,
+    firstLink: "",
+    nextLink: "",
+    lastLink: "",
+    currentPage: 1
+  }
+  // let startIndex = 0
+  // let endIndex = entryInput.value - 1
+  // let currentPage = 1
+  // let filterOn = false
+  let pictureData = "default"
+  // let currentPage = 1
+  // let limit = 2
 
   const table = document.querySelector("#data")
   const entryInput = document.querySelector("#entries")
-  const searchInput = document.querySelector("#search")
-  const pagesInput = document.querySelector("#pages")
+  // const searchInput = document.querySelector("#search")
+  const pageButton = document.querySelector("#pages")
   const prevPage = document.querySelector("#previous")
   const nextPage = document.querySelector("#next")
   const openModal = document.querySelector("#open-modal")
@@ -22,20 +38,33 @@
   const salaryInput = document.querySelector("#salary")
   const roleInput = document.querySelector("#role")
 
-  let startIndex = 0
-  let endIndex = entryInput.value - 1
-  let currentPage = 1
-  let filterOn = false
-  let pictureData = "default"
-
   /**
-   * Fetch data form server.
-   * @param {string} url 
+   * request GET employee with query string
+   * @param {string} query 
    * @returns 
    */
-  async function fetchData(url) {
+  async function getEmployee(page, limit) {
     try {
-      const res = await fetch(url)
+      const res = await fetch(EMPLOYEES_URL + `?_page=${page}&_limit=${limit}`)
+      
+      if (res.headers.get("x-total-count")) {
+        vars.totalCount = res.headers.get("x-total-count")
+      }
+      
+      if (res.headers.get("link")) {
+        const link = res.headers.get("link")
+        const arrLink = link.split(", ")
+        
+        const firstLink = arrLink.find(item => item.includes('rel="first"'))
+        if (firstLink) vars.firstLink = firstLink.split(">")[0].slice(1)
+        
+        const lastLink = arrLink.find(item => item.includes('rel="last"'))
+        if (lastLink) vars.lastLink = lastLink.split(">")[0].slice(1)
+        
+        const nextLink = arrLink.find(item => item.includes('rel="next"'))
+        if (nextLink) vars.nextLink = nextLink.split(">")[0].slice(1)
+      }
+
       const data = await res.json()
       return data
     } catch (error) {
@@ -43,114 +72,114 @@
     }
   }
 
-  /**
-   * Fill array with data.
-   * @param {Array} data 
-   * @param {Array} array 
-   */
-  function manipulateData(data, array) {
-    array.push(...data)
-  }
+  // /**
+  //  * Fill array with data.
+  //  * @param {Array} data 
+  //  * @param {Array} array 
+  //  */
+  // function manipulateData(data, array) {
+  //   array.push(...data)
+  // }
 
   /**
-   * Render employee data into table.
-   * @param {Array} data 
+   * Render employee table
    */
-  function renderData(data) {
+  function renderEmployee() {
     table.innerHTML = ""
-    if (data.length !== 0) {
-      data.forEach((employee, index) => {
-        if (index >= startIndex && index <= endIndex ) {
-          const pictureArr = pictures.filter(pic => pic.id === employee.picture)
-          const pictureObj = pictureArr[0]
-          const pictureSource = pictureObj.picture
+    if (employees.length !== 0) {
+      employees.forEach(employee => {
+        // if (index >= startIndex && index <= endIndex ) {
+        // }
+        const pictureArr = pictures.filter(pic => pic.id === employee.picture)
+        const pictureObj = pictureArr[0]
+        const pictureSource = pictureObj.picture
 
-          const tr = document.createElement("tr")
+        const tr = document.createElement("tr")
+        tr.classList = "h-32"
 
-          const tdPic = document.createElement("td")
-          tdPic.classList = "p-2 border"
-          const divPic = document.createElement("div")
-          divPic.classList = "flex items-center justify-center"
-          const imgPic = document.createElement("img")
-          imgPic.src = pictureSource
-          imgPic.alt = employee.name
-          imgPic.height = 64
-          imgPic.width = 64
-          divPic.appendChild(imgPic)
-          tdPic.appendChild(divPic)
-          tr.appendChild(tdPic)
+        const tdPic = document.createElement("td")
+        tdPic.classList = "p-2 border"
+        const divPic = document.createElement("div")
+        divPic.classList = "flex items-center justify-center"
+        const imgPic = document.createElement("img")
+        imgPic.src = pictureSource
+        imgPic.alt = employee.name
+        imgPic.height = 64
+        imgPic.width = 64
+        divPic.appendChild(imgPic)
+        tdPic.appendChild(divPic)
+        tr.appendChild(tdPic)
 
-          const tdID = document.createElement("td")
-          tdID.classList = "p-2 border"
-          tdID.textContent = employee.id
-          tr.appendChild(tdID)
+        const tdID = document.createElement("td")
+        tdID.classList = "p-2 border"
+        tdID.textContent = employee.id
+        tr.appendChild(tdID)
 
-          const tdName = document.createElement("td")
-          tdName.classList = "p-2 border"
-          tdName.textContent = employee.name
-          tr.appendChild(tdName)
+        const tdName = document.createElement("td")
+        tdName.classList = "p-2 border"
+        tdName.textContent = employee.name
+        tr.appendChild(tdName)
 
-          const tdEmail = document.createElement("td")
-          tdEmail.classList = "p-2 border"
-          tdEmail.textContent = employee.email
-          tr.appendChild(tdEmail)
+        const tdEmail = document.createElement("td")
+        tdEmail.classList = "p-2 border"
+        tdEmail.textContent = employee.email
+        tr.appendChild(tdEmail)
 
-          const tdDate = document.createElement("td")
-          tdDate.classList = "p-2 border text-center"
-          tdDate.textContent = employee.date
-          tr.appendChild(tdDate)
+        const tdDate = document.createElement("td")
+        tdDate.classList = "p-2 border text-center"
+        tdDate.textContent = employee.date
+        tr.appendChild(tdDate)
 
-          const tdSalary = document.createElement("td")
-          tdSalary.classList = "py-2 px-4 border"
-          const divSalary = document.createElement("div")
-          divSalary.classList = "flex items-center justify-between"
-          const spanCurrency = document.createElement("span")
-          spanCurrency.textContent = "$"
-          const salaryValue = document.createTextNode(employee.salary)
-          divSalary.appendChild(spanCurrency)
-          divSalary.appendChild(salaryValue)
-          tdSalary.appendChild(divSalary)
-          tr.appendChild(tdSalary)
+        const tdSalary = document.createElement("td")
+        tdSalary.classList = "py-2 px-4 border"
+        const divSalary = document.createElement("div")
+        divSalary.classList = "flex items-center justify-between"
+        const spanCurrency = document.createElement("span")
+        spanCurrency.textContent = "$"
+        const salaryValue = document.createTextNode(employee.salary)
+        divSalary.appendChild(spanCurrency)
+        divSalary.appendChild(salaryValue)
+        tdSalary.appendChild(divSalary)
+        tr.appendChild(tdSalary)
 
-          const tdRole = document.createElement("td")
-          tdRole.classList = "p-2 border"
-          tdRole.textContent = employee.role
-          tr.appendChild(tdRole)
+        const tdRole = document.createElement("td")
+        tdRole.classList = "p-2 border"
+        tdRole.textContent = employee.role
+        tr.appendChild(tdRole)
 
-          const tdActive = document.createElement("td")
-          tdActive.classList = "p-2 border text-center"
-          const spanActive = document.createElement("span")
-          spanActive.classList = employee.active ? "font-semibold text-green-400" : "font-semibold text-red-400"
-          spanActive.textContent = employee.active ? "Active" : "Inactive"
-          tdActive.appendChild(spanActive)
-          tr.appendChild(tdActive)
+        const tdActive = document.createElement("td")
+        tdActive.classList = "p-2 border text-center"
+        const spanActive = document.createElement("span")
+        spanActive.classList = employee.active ? "font-semibold text-green-400" : "font-semibold text-red-400"
+        spanActive.textContent = employee.active ? "Active" : "Inactive"
+        tdActive.appendChild(spanActive)
+        tr.appendChild(tdActive)
 
-          const tdActions = document.createElement("td")
-          tdActions.classList = "p-2 border text-center"
-          
-          const inputUpdate = document.createElement("input")
-          inputUpdate.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800"
-          inputUpdate.type = "button"
-          inputUpdate.value = "UPD"
-          inputUpdate.addEventListener("mouseup", () => updateModal(employee.id))
-          tdActions.appendChild(inputUpdate)
+        const tdActions = document.createElement("td")
+        tdActions.classList = "p-2 border text-center"
+        
+        const inputUpdate = document.createElement("input")
+        inputUpdate.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800"
+        inputUpdate.type = "button"
+        inputUpdate.value = "UPD"
+        inputUpdate.addEventListener("mouseup", () => updateModal(employee.id))
+        tdActions.appendChild(inputUpdate)
 
-          const inputDelete = document.createElement("input")
-          inputDelete.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800"
-          inputDelete.type = "button"
-          inputDelete.value = "DEL"
-          inputDelete.addEventListener("mouseup", () => deleteData(employee.id, employee.picture))
-          tdActions.appendChild(inputDelete)
+        const inputDelete = document.createElement("input")
+        inputDelete.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-red-700 hover:bg-red-600 active:bg-red-800"
+        inputDelete.type = "button"
+        inputDelete.value = "DEL"
+        inputDelete.addEventListener("mouseup", () => deleteData(employee.id, employee.picture))
+        tdActions.appendChild(inputDelete)
 
-          tr.appendChild(tdActions)
-          table.appendChild(tr)
-        }
+        tr.appendChild(tdActions)
+        table.appendChild(tr)
       })
     } else {
       const tr = document.createElement("tr")
       const td = document.createElement("td")
       td.colSpan = 9
-      td.classList = "h-32 text-center"
+      td.classList = "h-64 text-center"
       td.textContent = "empty data"
       tr.appendChild(td)
       table.appendChild(tr)
@@ -162,52 +191,57 @@
    */
   window.onload = async () => {
     try {
-      const employeeData = await fetchData(API_URL + "/employees")
-      const pictureData = await fetchData(API_URL + "/pictures")
-      manipulateData(employeeData, employees)
-      manipulateData(pictureData, pictures)
-      renderData(employees)
-      renderPages(employees.length)
+      // const rawEmployee = await fetch(EMPLOYEES_URL + `?_page=${currentPage}&_limit=${limit}`)
+      const resEmployee = await getEmployee(vars.currentPage, entryInput.value)
+      employees.push(...resEmployee)
+
+      const rawPic = await fetch(PICTURES_URL)
+      const resPic = await rawPic.json()
+      pictures.push(...resPic)
+      // manipulateData(employeeData, employees)
+      // manipulateData(pictureData, pictures)
+      renderEmployee()
+      renderPages(vars.currentPage)
     } catch (error) {
       console.log(error)
-      renderData(employees)
-      renderPages(employees.length)
+      renderEmployee()
+      // renderPages(employees.length)
     }
   }
 
-  /**
-   * Entry selection change actions
-   */
-  entryInput.addEventListener("change", e => {
-    const entry = e.target.value
-    startIndex = 0
-    endIndex = entry - 1
-    if (filterOn) {
-      renderData(filteredEmployees)
-      renderPages(filteredEmployees.length)
-    } else {
-      renderData(employees)
-      renderPages(employees.length)
-    }
-  })
+  // /**
+  //  * Entry selection change actions
+  //  */
+  // entryInput.addEventListener("change", e => {
+  //   const entry = e.target.value
+  //   startIndex = 0
+  //   endIndex = entry - 1
+  //   if (filterOn) {
+  //     renderEmployee(filteredEmployees)
+  //     renderPages(filteredEmployees.length)
+  //   } else {
+  //     renderEmployee(employees)
+  //     renderPages(employees.length)
+  //   }
+  // })
 
-  /**
-   * Search input actions
-   */
-  searchInput.addEventListener("input", e => {
-    const term = e.target.value.toLowerCase()
-    filteredEmployees.length = 0
-    startIndex = 0
-    if (term !== null || term !== "") {
-      filterOn = true
-      filteredEmployees.push(...employees.filter(employee => employee.id.toLowerCase().includes(term) || employee.name.toLowerCase().includes(term) || employee.email.toLowerCase().includes(term) || employee.role.toLowerCase().includes(term)))
-      renderData(filteredEmployees)
-      renderPages(filteredEmployees.length)
-    } else {
-      filterOn = false
-      renderData(employees)
-    }
-  })
+  // /**
+  //  * Search input actions
+  //  */
+  // searchInput.addEventListener("input", e => {
+  //   const term = e.target.value.toLowerCase()
+  //   filteredEmployees.length = 0
+  //   startIndex = 0
+  //   if (term !== null || term !== "") {
+  //     filterOn = true
+  //     filteredEmployees.push(...employees.filter(employee => employee.id.toLowerCase().includes(term) || employee.name.toLowerCase().includes(term) || employee.email.toLowerCase().includes(term) || employee.role.toLowerCase().includes(term)))
+  //     renderEmployee(filteredEmployees)
+  //     renderPages(filteredEmployees.length)
+  //   } else {
+  //     filterOn = false
+  //     renderEmployee(employees)
+  //   }
+  // })
 
   /**
    * Open modal with data to be updated
@@ -237,21 +271,23 @@
    */
   window.deleteData = async (dataID, picID) => {
     try {
-      const employeeResponse = await fetch(API_URL + "/employees/" + dataID, { method: "DELETE" })
+      const employeeResponse = await fetch(EMPLOYEES_URL + `/${dataID}`, { method: "DELETE" })
       const employeeJson = await employeeResponse.json()
       const deletedEmployees = employees.filter(employee => employee.id !== employeeJson.id)
       employees.length = 0
-      manipulateData(deletedEmployees, employees)
+      // manipulateData(deletedEmployees, employees)
+      employees.push(...deletedEmployees)
       if (picID !== "default") {
-        const picResponse = await fetch(API_URL + "/pictures/" + picID, { method: "DELETE" })
+        const picResponse = await fetch(PICTURES_URL + `/${picID}`, { method: "DELETE" })
         const picJson = await picResponse.json()
         const deletedPictures = pictures.filter(pic => pic.id !== picJson.id)
         pictures.length = 0
-        manipulateData(deletedPictures, pictures)
+        // manipulateData(deletedPictures, pictures)
+        pictures.push(...deletedPictures)
       }
-      startIndex = 0
-      endIndex = entryInput.value - 1
-      renderData(employees)
+      // startIndex = 0
+      // endIndex = entryInput.value - 1
+      renderEmployee()
       renderPages(employees.length)
     } catch (error) {
       console.log(error)
@@ -260,77 +296,75 @@
   }
 
   /**
-   * Update active "Previous" page button appearance
+   * Update "Previous" page button appearance
+   * @param {boolean} condition 
    */
-  function activatePrevPage() {
-    prevPage.classList.remove("text-gray-400", "cursor-not-allowed")
-    prevPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+  function activatePrevPage(condition) {
+    const prevClass = prevPage.classList
+    if (condition === true) {
+      prevClass.remove("text-gray-400", "cursor-not-allowed")
+      prevClass.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    } else {
+      prevClass.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+      prevClass.add("text-gray-400", "cursor-not-allowed")
+    }
   }
 
   /**
-   * Update inactive "Previous" page button appearance
+   * Update "Next" page button appearance
+   * @param {boolean} condition 
    */
-  function deactivatePrevPage() {
-    prevPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-    prevPage.classList.add("text-gray-400", "cursor-not-allowed")
+  function activateNextPage(condition) {
+    const nextClass = nextPage.classList
+    if (condition === true) {
+      nextClass.remove("text-gray-400", "cursor-not-allowed")
+      nextClass.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    } else {
+      nextClass.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+      nextClass.add("text-gray-400", "cursor-not-allowed")
+    }
   }
 
   /**
-   * Update active "Next" page button appearance
+   * Update pages button appearance
+   * @param {number} page 
+   * @param {boolean} condition 
    */
-  function activateNextPage() {
-    nextPage.classList.remove("text-gray-400", "cursor-not-allowed")
-    nextPage.classList.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+  function activatePage(page, condition) {
+    const pageClass = document.querySelector(`#page${page}`).classList
+    if (condition === true) {
+      pageClass.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+      pageClass.add("bg-white", "text-black", "cursor-default")
+    } else {
+      pageClass.remove("bg-white", "text-black", "cursor-default")
+      pageClass.add("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+    }
   }
 
   /**
-   * Update inactive "Next" page button appearance
+   * Render pagination buttons
+   * @param {number} page 
    */
-  function deactivateNextPage() {
-    nextPage.classList.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-    nextPage.classList.add("text-gray-400", "cursor-not-allowed")
-  }
-
-  /**
-   * Update active current page appearance
-   */
-  function activatePage() {
-    document.querySelector("#page-" + currentPage).classList.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
-    document.querySelector("#page-" + currentPage).classList.add("bg-white", "text-black", "cursor-default")
-  }
-
-  /**
-   * Update inactive page appearance
-   */
-  function deactivatePage() {
-    document.querySelector("#page-" + currentPage).classList.remove("bg-white", "text-black", "cursor-default")
-    document.querySelector("#page-" + currentPage).classList.add("text-white", "hover:bg-gray-800", "active:bg-gray-600")
-  }
-
-  /**
-   * Render pagination number
-   * @param {number} dataLength 
-   */
-  function renderPages(dataLength) {
-    if (dataLength !== 0) {
-      const totalPages = Math.ceil(dataLength / entryInput.value)
-      pagesInput.innerHTML = ""
+  function renderPages(page) {
+    if (vars.totalCount !== 0) {
+      const totalPages = Math.ceil(vars.totalCount / entryInput.value)
+      pageButton.innerHTML = ""
       for (let index = 1; index <= totalPages; index++) {
         const input = document.createElement("input")
         input.type = "button"
         input.value = index
-        input.id = "page-" + index
-        input.addEventListener("mouseup", () => page(index))
+        input.id = "page" + index
+        input.addEventListener("mouseup", () => toPage(index))
         input.classList = "border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600"
-        pagesInput.appendChild(input)
+        pageButton.appendChild(input)
       }
-      currentPage = 1
-      activatePage()
-      deactivatePrevPage()
-      if (dataLength / entryInput.value <= 1) {
-        deactivateNextPage()
+      
+      activatePage(page, true)
+      activatePrevPage(false)
+      if (vars.totalCount / entryInput.value <= 1) {
+        activateNextPage(false)
       } else {
-        activateNextPage()
+        activateNextPage(true)
       }
     }
   }
@@ -339,58 +373,70 @@
    * Set page-related variables and page-related elements
    * @param {number} index 
    */
-  window.page = (index) => {
-    if (index !== currentPage) {
-      startIndex = (index * entryInput.value) - entryInput.value
-      endIndex = (index * entryInput.value) - 1
-      deactivatePage()
-      currentPage = index
-      activatePage()
-      if (filterOn) {
-        renderData(filteredEmployees)
-        if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {
-          deactivateNextPage()
-        } else {
-          activateNextPage()
-        }
+  window.toPage = async (index) => {
+    if (index !== vars.currentPage) {
+      // startIndex = (index * entryInput.value) - entryInput.value
+      // endIndex = (index * entryInput.value) - 1
+      activatePage(vars.currentPage, false)
+      activatePage(index, true)
+
+      if (index >= Math.ceil(vars.totalCount / entryInput.value)) {
+        activateNextPage(false)
       } else {
-        renderData(employees)
-        if (index >= Math.ceil(employees.length / entryInput.value)) {
-          deactivateNextPage()
-        } else {
-          activateNextPage()
-        }
+        activateNextPage(true)
       }
+      
+      const resEmployee = await getEmployee(index, entryInput.value)
+      employees.length = 0
+      employees.push(...resEmployee)
+      renderEmployee()
+
+      vars.currentPage = index
+      // if (filterOn) {
+      //   renderEmployee(filteredEmployees)
+      //   if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {
+      //     deactivateNextPage()
+      //   } else {
+      //     activateNextPage()
+      //   }
+      // } else {
+      //   renderEmployee(employees)
+      //   if (index >= Math.ceil(employees.length / entryInput.value)) {
+      //     deactivateNextPage()
+      //   } else {
+      //     activateNextPage()
+      //   }
+      // }
       if (index <= 1) {
-        deactivatePrevPage()
+        activatePrevPage(false)
       } else {
         if (prevPage.classList.contains("cursor-not-allowed")) {
-          activatePrevPage()
+          activatePrevPage(true)
         }
       }
     }
   }
 
-  /**
-   * Previous page button actions
-   */
-  prevPage.addEventListener("mouseup", () => {
-    if (currentPage > 1) {
-      deactivatePage()
-      page(currentPage - 1)
-    }
-  })
+  // /**
+  //  * Previous page button actions
+  //  */
+  // prevPage.addEventListener("mouseup", () => {
+  //   if (currentPage > 1) {
+  //     deactivatePage()
+  //     page(currentPage - 1)
+  //   }
+  // })
 
-  /**
-   * Next page button actions
-   */
-  nextPage.addEventListener("mouseup", () => {
-    const dataLength = filterOn ? filteredEmployees.length : employees.length
-    if (currentPage < Math.ceil(dataLength / entryInput.value)) {
-      deactivatePage()
-      page(currentPage + 1)
-    }
-  })
+  // /**
+  //  * Next page button actions
+  //  */
+  // nextPage.addEventListener("mouseup", () => {
+  //   const dataLength = filterOn ? filteredEmployees.length : employees.length
+  //   if (currentPage < Math.ceil(dataLength / entryInput.value)) {
+  //     deactivatePage()
+  //     page(currentPage + 1)
+  //   }
+  // })
 
   /**
    * Open modal button actions
@@ -461,26 +507,28 @@
           id: picID,
           picture: pictureData
         }
-        const picResponse = await fetch(API_URL + "/pictures", {
+        const picResponse = await fetch(PICTURES_URL, {
           method: "post",
           body: JSON.stringify(newPic)
         })
         const picJson = await picResponse.json()
-        manipulateData([picJson], pictures)
+        // manipulateData([picJson], pictures)
+        pictures.push(picJson)
       }
 
-      const employeeResponse = await fetch(API_URL + "/employees", {
+      const employeeResponse = await fetch(EMPLOYEES_URL, {
         method: "POST",
         body: JSON.stringify(newEmployee)
       })
       const employeeJson = await employeeResponse.json()
-      manipulateData([employeeJson], employees)
+      // manipulateData([employeeJson], employees)
+      employees.push(employeeJson)
 
       modal.classList.remove("flex", "no-doc-scroll")
       modal.classList.add("hidden")
-      startIndex = 0
+      // startIndex = 0
       endIndex = entryInput.value - 1
-      renderData(employees)
+      renderEmployee()
       renderPages(employees.length)
     } catch (error) {
       console.log(error)

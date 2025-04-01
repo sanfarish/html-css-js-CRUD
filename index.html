@@ -72,20 +72,34 @@
           </thead>
 
           <!-- Main Data Table -->
-          <tbody id="data"></tbody>
+          <tbody id="data">
+            <tr class="h-32">
+              <td colspan="9"></td>
+            </tr>
+            <tr class="h-32">
+              <td colspan="9"></td>
+            </tr>
+          </tbody>
         </table>
 
         <!-- Pagination -->
         <div class="flex justify-center gap-4 text-white">
           <input
-            class="cursor-pointer rounded border px-2 py-1 hover:bg-gray-800 active:bg-gray-600"
+            class="cursor-not-allowed rounded border px-2 py-1 text-gray-400"
             type="button"
             value="Previous"
             id="previous"
           />
-          <div class="flex gap-4" id="pages"></div>
+          <div class="flex gap-4" id="pages">
+            <input
+              class="border rounded px-2 py-1 bg-white text-black"
+              type="button"
+              value="1"
+              id="page1"
+            />
+          </div>
           <input
-            class="cursor-pointer rounded border px-2 py-1 hover:bg-gray-800 active:bg-gray-600"
+            class="cursor-not-allowed rounded border px-2 py-1 text-gray-400"
             type="button"
             value="Next"
             id="next"
