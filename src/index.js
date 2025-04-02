@@ -1,7 +1,7 @@
 (() => {
-  const EMPLOYEES_URL = "http://localhost:3000/employees"
-  const PICTURES_URL = "http://localhost:3000/pictures"
+  const API_URL = "http://localhost:3000/employees"
   const employees = []
+  // const PICTURES_URL = "http://localhost:3000/pictures"
   // const pictures = []
   // const filteredEmployees = []
 
@@ -45,7 +45,7 @@
    */
   async function getEmployee(page) {
     try {
-      const res = await fetch(EMPLOYEES_URL + `?_page=${page}&_limit=${entryInput.value}`)
+      const res = await fetch(API_URL + `?_page=${page}&_limit=${entryInput.value}`)
       
       if (res.headers.get("x-total-count")) {
         vars.totalCount = res.headers.get("x-total-count")
@@ -102,7 +102,7 @@
         const divPic = document.createElement("div")
         divPic.classList = "flex items-center justify-center"
         const imgPic = document.createElement("img")
-        imgPic.src = "url"
+        imgPic.src = `http://localhost:3000/${employee.picture}`
         imgPic.alt = employee.name
         imgPic.height = 64
         imgPic.width = 64
@@ -191,7 +191,7 @@
    */
   window.onload = async () => {
     try {
-      // const rawEmployee = await fetch(EMPLOYEES_URL + `?_page=${currentPage}&_limit=${limit}`)
+      // const rawEmployee = await fetch(API_URL + `?_page=${currentPage}&_limit=${limit}`)
       const resEmployee = await getEmployee(vars.currentPage)
       employees.push(...resEmployee)
 
@@ -271,20 +271,20 @@
    */
   window.deleteData = async (dataID, picID) => {
     try {
-      const employeeResponse = await fetch(EMPLOYEES_URL + `/${dataID}`, { method: "DELETE" })
+      const employeeResponse = await fetch(API_URL + `/${dataID}`, { method: "DELETE" })
       const employeeJson = await employeeResponse.json()
       const deletedEmployees = employees.filter(employee => employee.id !== employeeJson.id)
       employees.length = 0
       // manipulateData(deletedEmployees, employees)
       employees.push(...deletedEmployees)
-      if (picID !== "default") {
-        const picResponse = await fetch(PICTURES_URL + `/${picID}`, { method: "DELETE" })
-        const picJson = await picResponse.json()
-        // const deletedPictures = pictures.filter(pic => pic.id !== picJson.id)
-        // pictures.length = 0
-        // manipulateData(deletedPictures, pictures)
-        // pictures.push(...deletedPictures)
-      }
+      // if (picID !== "default") {
+      //   const picResponse = await fetch(PICTURES_URL + `/${picID}`, { method: "DELETE" })
+      //   const picJson = await picResponse.json()
+      //   const deletedPictures = pictures.filter(pic => pic.id !== picJson.id)
+      //   pictures.length = 0
+      //   manipulateData(deletedPictures, pictures)
+      //   pictures.push(...deletedPictures)
+      // }
       // startIndex = 0
       // endIndex = entryInput.value - 1
       renderEmployee()
@@ -503,21 +503,21 @@
       
       const newEmployee = Object.fromEntries(formData)
 
-      if (pictureData !== "default") {
-        const newPic = {
-          id: picID,
-          picture: pictureData
-        }
-        const picResponse = await fetch(PICTURES_URL, {
-          method: "post",
-          body: JSON.stringify(newPic)
-        })
-        const picJson = await picResponse.json()
-        // manipulateData([picJson], pictures)
-        // pictures.push(picJson)
-      }
+      // if (pictureData !== "default") {
+      //   const newPic = {
+      //     id: picID,
+      //     picture: pictureData
+      //   }
+      //   const picResponse = await fetch(PICTURES_URL, {
+      //     method: "post",
+      //     body: JSON.stringify(newPic)
+      //   })
+      //   const picJson = await picResponse.json()
+      //   manipulateData([picJson], pictures)
+      //   pictures.push(picJson)
+      // }
 
-      const employeeResponse = await fetch(EMPLOYEES_URL, {
+      const employeeResponse = await fetch(API_URL, {
         method: "POST",
         body: JSON.stringify(newEmployee)
       })

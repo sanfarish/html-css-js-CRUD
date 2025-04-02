@@ -8,7 +8,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "json-server db.json --middlewares middlewares/upload.js"
+    "start": "json-server db.json --middlewares middlewares/upload.js -w"
   },
   "repository": {
     "type": "git",

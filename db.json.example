@@ -1,23 +1,23 @@
 {
   "employees": [
     {
-      "id": "aioi7liri2",
+      "id": "x3exadhg4m",
       "name": "Faris Hasan",
       "email": "farisfalah@gmail.com",
       "date": "2025-03-20",
       "salary": 750,
       "role": "Software Developer",
-      "picture": "default",
+      "picture": "img-x3exadhg4m.png",
       "active": true
     },
     {
-      "id": "kifunx5cmj",
+      "id": "82ti39k3ny",
       "name": "Richard Thorn",
       "email": "richardthorn@yahoo.com",
       "date": "2024-04-18",
       "salary": 1000,
       "role": "Product Manager",
-      "picture": "default",
+      "picture": "img-82ti39k3ny.png",
       "active": true
     },
     {
@@ -27,7 +27,7 @@
       "date": "2023-05-15",
       "salary": 900,
       "role": "Business Analyst",
-      "picture": "default",
+      "picture": "img-jet37wxnuh.png",
       "active": false
     },
     {
@@ -37,7 +37,7 @@
       "date": "2022-06-11",
       "salary": 500,
       "role": "UI/UX Designer",
-      "picture": "default",
+      "picture": "img-g018ipgpd4.png",
       "active": true
     },
     {
@@ -47,7 +47,7 @@
       "date": "2021-07-06",
       "salary": 650,
       "role": "QA Engineer",
-      "picture": "default",
+      "picture": "img-rqbqu9nad3.png",
       "active": false
     },
     {
@@ -57,7 +57,7 @@
       "date": "2021-08-30",
       "salary": 800,
       "role": "Software Developer",
-      "picture": "default",
+      "picture": "img-15se1mzmkt.png",
       "active": true
     },
     {
@@ -67,37 +67,37 @@
       "date": "2022-09-28",
       "salary": 1100,
       "role": "Product Manager",
-      "picture": "default",
+      "picture": "img-2rlr1dllm5.png",
       "active": false
     },
     {
-      "id": "82ti39k3ny",
+      "id": "kcu5jp5v1z",
       "name": "Amanda Campbell",
       "email": "amandacampbell@yahoo.com",
       "date": "2023-10-27",
       "salary": 950,
       "role": "Business Analyst",
-      "picture": "default",
+      "picture": "img-kcu5jp5v1z.png",
       "active": true
     },
     {
-      "id": "9agcke672x",
+      "id": "h101zvxa62",
       "name": "Lou Vera",
       "email": "louvera@gmail.com",
       "date": "2024-11-24",
       "salary": 550,
       "role": "UI/UX Designer",
-      "picture": "default",
+      "picture": "img-h101zvxa62.png",
       "active": true
     },
     {
-      "id": "4w6de3qepm",
+      "id": "scrgvq5t7k",
       "name": "Jerry Thomas",
       "email": "jerrythomas@yahoo.com",
       "date": "2025-02-23",
       "salary": 600,
       "role": "QA Engineer",
-      "picture": "default",
+      "picture": "img-scrgvq5t7k.png",
       "active": true
     }
   ]
