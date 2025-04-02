@@ -2,7 +2,7 @@
   const EMPLOYEES_URL = "http://localhost:3000/employees"
   const PICTURES_URL = "http://localhost:3000/pictures"
   const employees = []
-  const pictures = []
+  // const pictures = []
   // const filteredEmployees = []
 
   const vars = {
@@ -43,9 +43,9 @@
    * @param {string} query 
    * @returns 
    */
-  async function getEmployee(page, limit) {
+  async function getEmployee(page) {
     try {
-      const res = await fetch(EMPLOYEES_URL + `?_page=${page}&_limit=${limit}`)
+      const res = await fetch(EMPLOYEES_URL + `?_page=${page}&_limit=${entryInput.value}`)
       
       if (res.headers.get("x-total-count")) {
         vars.totalCount = res.headers.get("x-total-count")
@@ -90,9 +90,9 @@
       employees.forEach(employee => {
         // if (index >= startIndex && index <= endIndex ) {
         // }
-        const pictureArr = pictures.filter(pic => pic.id === employee.picture)
-        const pictureObj = pictureArr[0]
-        const pictureSource = pictureObj.picture
+        // const pictureArr = pictures.filter(pic => pic.id === employee.picture)
+        // const pictureObj = pictureArr[0]
+        // const pictureSource = pictureObj.picture
 
         const tr = document.createElement("tr")
         tr.classList = "h-32"
@@ -102,7 +102,7 @@
         const divPic = document.createElement("div")
         divPic.classList = "flex items-center justify-center"
         const imgPic = document.createElement("img")
-        imgPic.src = pictureSource
+        imgPic.src = "url"
         imgPic.alt = employee.name
         imgPic.height = 64
         imgPic.width = 64
@@ -192,12 +192,12 @@
   window.onload = async () => {
     try {
       // const rawEmployee = await fetch(EMPLOYEES_URL + `?_page=${currentPage}&_limit=${limit}`)
-      const resEmployee = await getEmployee(vars.currentPage, entryInput.value)
+      const resEmployee = await getEmployee(vars.currentPage)
       employees.push(...resEmployee)
 
-      const rawPic = await fetch(PICTURES_URL)
-      const resPic = await rawPic.json()
-      pictures.push(...resPic)
+      // const rawPic = await fetch(PICTURES_URL)
+      // const resPic = await rawPic.json()
+      // pictures.push(...resPic)
       // manipulateData(employeeData, employees)
       // manipulateData(pictureData, pictures)
       renderEmployee()
@@ -251,8 +251,8 @@
     const employee = employees.filter(employee => employee.id === dataID)[0]
     const { name, email, date, salary, role, active, picture } = employee
 
-    const employeePic = pictures.filter(pic => pic.id === picture)[0]
-    pictureContainer.src = employeePic.picture
+    // const employeePic = pictures.filter(pic => pic.id === picture)[0]
+    // pictureContainer.src = employeePic.picture
 
     nameInput.value = name
     emailInput.value = email
@@ -280,10 +280,10 @@
       if (picID !== "default") {
         const picResponse = await fetch(PICTURES_URL + `/${picID}`, { method: "DELETE" })
         const picJson = await picResponse.json()
-        const deletedPictures = pictures.filter(pic => pic.id !== picJson.id)
-        pictures.length = 0
+        // const deletedPictures = pictures.filter(pic => pic.id !== picJson.id)
+        // pictures.length = 0
         // manipulateData(deletedPictures, pictures)
-        pictures.push(...deletedPictures)
+        // pictures.push(...deletedPictures)
       }
       // startIndex = 0
       // endIndex = entryInput.value - 1
@@ -361,6 +361,7 @@
       
       activatePage(page, true)
       activatePrevPage(false)
+
       if (vars.totalCount / entryInput.value <= 1) {
         activateNextPage(false)
       } else {
@@ -386,7 +387,7 @@
         activateNextPage(true)
       }
       
-      const resEmployee = await getEmployee(index, entryInput.value)
+      const resEmployee = await getEmployee(index)
       employees.length = 0
       employees.push(...resEmployee)
       renderEmployee()
@@ -417,26 +418,26 @@
     }
   }
 
-  // /**
-  //  * Previous page button actions
-  //  */
-  // prevPage.addEventListener("mouseup", () => {
-  //   if (currentPage > 1) {
-  //     deactivatePage()
-  //     page(currentPage - 1)
-  //   }
-  // })
+  /**
+   * Previous page button action
+   */
+  prevPage.addEventListener("mouseup", () => {
+    if (vars.currentPage > 1) {
+      activatePage(vars.currentPage, false)
+      toPage(vars.currentPage - 1)
+    }
+  })
 
-  // /**
-  //  * Next page button actions
-  //  */
-  // nextPage.addEventListener("mouseup", () => {
-  //   const dataLength = filterOn ? filteredEmployees.length : employees.length
-  //   if (currentPage < Math.ceil(dataLength / entryInput.value)) {
-  //     deactivatePage()
-  //     page(currentPage + 1)
-  //   }
-  // })
+  /**
+   * Next page button action
+   */
+  nextPage.addEventListener("mouseup", () => {
+    // const dataLength = filterOn ? filteredEmployees.length : employees.length
+    if (vars.currentPage < Math.ceil(vars.totalCount / entryInput.value)) {
+      activatePage(vars.currentPage, false)
+      toPage(vars.currentPage + 1)
+    }
+  })
 
   /**
    * Open modal button actions
@@ -513,7 +514,7 @@
         })
         const picJson = await picResponse.json()
         // manipulateData([picJson], pictures)
-        pictures.push(picJson)
+        // pictures.push(picJson)
       }
 
       const employeeResponse = await fetch(EMPLOYEES_URL, {

@@ -40,5 +40,6 @@
 
 ### CRUD related
 
-1. Function to update data
-2. Sanitise input
+1. Add sort function
+2. Function to update data
+3. Sanitise input
