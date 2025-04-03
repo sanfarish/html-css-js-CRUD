@@ -1,5 +1,5 @@
 (() => {
-  const API_URL = "http://localhost:3000/employees"
+  const API_URL = "http://localhost:3000"
   const employees = []
   // const PICTURES_URL = "http://localhost:3000/pictures"
   // const pictures = []
@@ -8,9 +8,11 @@
   const vars = {
     totalCount: 0,
     firstLink: "",
-    nextLink: "",
     lastLink: "",
-    currentPage: 1
+    prevLink: "",
+    nextLink: "",
+    currentPage: 1,
+    keyword: ""
   }
   // let startIndex = 0
   // let endIndex = entryInput.value - 1
@@ -22,7 +24,8 @@
 
   const table = document.querySelector("#data")
   const entryInput = document.querySelector("#entries")
-  // const searchInput = document.querySelector("#search")
+  const keywordsForm = document.querySelector("#keywords-form")
+  const keywordsInput = document.querySelector("#keywords-input")
   const pageButton = document.querySelector("#pages")
   const prevPage = document.querySelector("#previous")
   const nextPage = document.querySelector("#next")
@@ -40,12 +43,14 @@
 
   /**
    * request GET employee with query string
-   * @param {string} query 
+   * @param {string} page 
+   * @param {string} keyword 
    * @returns 
    */
   async function getEmployee(page) {
     try {
-      const res = await fetch(API_URL + `?_page=${page}&_limit=${entryInput.value}`)
+      const fullURL = vars.keyword !== "" ? `/employees?_page=${page}&_limit=${entryInput.value}&q=${vars.keyword}` : `/employees?_page=${page}&_limit=${entryInput.value}`
+      const res = await fetch(API_URL + fullURL)
       
       if (res.headers.get("x-total-count")) {
         vars.totalCount = res.headers.get("x-total-count")
@@ -60,6 +65,9 @@
         
         const lastLink = arrLink.find(item => item.includes('rel="last"'))
         if (lastLink) vars.lastLink = lastLink.split(">")[0].slice(1)
+        
+        const prevLink = arrLink.find(item => item.includes('rel="prev"'))
+        if (prevLink) vars.prevLink = prevLink.split(">")[0].slice(1)
         
         const nextLink = arrLink.find(item => item.includes('rel="next"'))
         if (nextLink) vars.nextLink = nextLink.split(">")[0].slice(1)
@@ -95,14 +103,14 @@
         // const pictureSource = pictureObj.picture
 
         const tr = document.createElement("tr")
-        tr.classList = "h-32"
+        tr.classList = "h-28"
 
         const tdPic = document.createElement("td")
         tdPic.classList = "p-2 border"
         const divPic = document.createElement("div")
         divPic.classList = "flex items-center justify-center"
         const imgPic = document.createElement("img")
-        imgPic.src = `http://localhost:3000/${employee.picture}`
+        imgPic.src = API_URL + `/${employee.picture}`
         imgPic.alt = employee.name
         imgPic.height = 64
         imgPic.width = 64
@@ -192,6 +200,7 @@
   window.onload = async () => {
     try {
       // const rawEmployee = await fetch(API_URL + `?_page=${currentPage}&_limit=${limit}`)
+      employees.length = 0
       const resEmployee = await getEmployee(vars.currentPage)
       employees.push(...resEmployee)
 
@@ -209,21 +218,22 @@
     }
   }
 
-  // /**
-  //  * Entry selection change actions
-  //  */
-  // entryInput.addEventListener("change", e => {
-  //   const entry = e.target.value
-  //   startIndex = 0
-  //   endIndex = entry - 1
-  //   if (filterOn) {
-  //     renderEmployee(filteredEmployees)
-  //     renderPages(filteredEmployees.length)
-  //   } else {
-  //     renderEmployee(employees)
-  //     renderPages(employees.length)
-  //   }
-  // })
+  /**
+   * Entry selection change actions
+   */
+  entryInput.addEventListener("change", async e => {
+    vars.currentPage = 1
+    employees.length = 0
+    const resEmployee = await getEmployee(vars.currentPage)
+    employees.push(...resEmployee)
+    // if (filterOn) {
+    //   renderEmployee(filteredEmployees)
+    //   renderPages(filteredEmployees.length)
+    // } else {
+    // }
+    renderEmployee()
+    renderPages(vars.currentPage)
+  })
 
   // /**
   //  * Search input actions
@@ -242,6 +252,34 @@
   //     renderEmployee(employees)
   //   }
   // })
+
+  /**
+   * Keyword filter form submit actions
+   */
+  keywordsForm.addEventListener("submit", async e => {
+    e.preventDefault()
+    vars.keyword = keywordsInput.value.toString().trim()
+    vars.currentPage = 1
+    employees.length = 0
+    const resEmployee = await getEmployee(vars.currentPage)
+    employees.push(...resEmployee)
+    renderEmployee()
+    renderPages(vars.currentPage)
+  })
+
+
+  keywordsForm.addEventListener("reset", async e => {
+    keywordsInput.value = ""
+    if (vars.keyword !== "") {
+      vars.keyword = ""
+      vars.currentPage = 1
+      employees.length = 0
+      const resEmployee = await getEmployee(vars.currentPage)
+      employees.push(...resEmployee)
+      renderEmployee()
+      renderPages(vars.currentPage)
+    }
+  })
 
   /**
    * Open modal with data to be updated
@@ -271,7 +309,7 @@
    */
   window.deleteData = async (dataID, picID) => {
     try {
-      const employeeResponse = await fetch(API_URL + `/${dataID}`, { method: "DELETE" })
+      const employeeResponse = await fetch(API_URL + `/employees/${dataID}`, { method: "DELETE" })
       const employeeJson = await employeeResponse.json()
       const deletedEmployees = employees.filter(employee => employee.id !== employeeJson.id)
       employees.length = 0
@@ -486,7 +524,6 @@
   formInput.addEventListener("submit", async e => {
     e.preventDefault()
     try {
-  
       const formData = new FormData(formInput)
   
       formData.delete("picture")
@@ -517,7 +554,7 @@
       //   pictures.push(picJson)
       // }
 
-      const employeeResponse = await fetch(API_URL, {
+      const employeeResponse = await fetch(API_URL + "/employees", {
         method: "POST",
         body: JSON.stringify(newEmployee)
       })
