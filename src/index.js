@@ -53,7 +53,7 @@
       const res = await fetch(API_URL + fullURL)
       
       if (res.headers.get("x-total-count")) {
-        vars.totalCount = res.headers.get("x-total-count")
+        vars.totalCount = parseInt(res.headers.get("x-total-count"))
       }
       
       if (res.headers.get("link")) {
@@ -61,16 +61,32 @@
         const arrLink = link.split(", ")
         
         const firstLink = arrLink.find(item => item.includes('rel="first"'))
-        if (firstLink) vars.firstLink = firstLink.split(">")[0].slice(1)
+        if (firstLink) {
+          vars.firstLink = firstLink.split(">")[0].slice(1)
+        } else {
+          vars.firstLink = ""
+        }
         
         const lastLink = arrLink.find(item => item.includes('rel="last"'))
-        if (lastLink) vars.lastLink = lastLink.split(">")[0].slice(1)
+        if (lastLink) {
+          vars.lastLink = lastLink.split(">")[0].slice(1)
+        } else {
+          vars.lastLink = ""
+        }
         
         const prevLink = arrLink.find(item => item.includes('rel="prev"'))
-        if (prevLink) vars.prevLink = prevLink.split(">")[0].slice(1)
+        if (prevLink) {
+          vars.prevLink = prevLink.split(">")[0].slice(1)
+        } else {
+          vars.prevLink = ""
+        }
         
         const nextLink = arrLink.find(item => item.includes('rel="next"'))
-        if (nextLink) vars.nextLink = nextLink.split(">")[0].slice(1)
+        if (nextLink) {
+          vars.nextLink = nextLink.split(">")[0].slice(1)
+        } else {
+          vars.nextLink = ""
+        }
       }
 
       const data = await res.json()
@@ -103,10 +119,10 @@
         // const pictureSource = pictureObj.picture
 
         const tr = document.createElement("tr")
-        tr.classList = "h-28"
+        tr.classList = "h-24"
 
         const tdPic = document.createElement("td")
-        tdPic.classList = "p-2 border"
+        tdPic.classList = "border"
         const divPic = document.createElement("div")
         divPic.classList = "flex items-center justify-center"
         const imgPic = document.createElement("img")
@@ -119,22 +135,22 @@
         tr.appendChild(tdPic)
 
         const tdID = document.createElement("td")
-        tdID.classList = "p-2 border"
+        tdID.classList = "p-3 border"
         tdID.textContent = employee.id
         tr.appendChild(tdID)
 
         const tdName = document.createElement("td")
-        tdName.classList = "p-2 border"
+        tdName.classList = "p-3 border"
         tdName.textContent = employee.name
         tr.appendChild(tdName)
 
         const tdEmail = document.createElement("td")
-        tdEmail.classList = "p-2 border"
+        tdEmail.classList = "p-3 border"
         tdEmail.textContent = employee.email
         tr.appendChild(tdEmail)
 
         const tdDate = document.createElement("td")
-        tdDate.classList = "p-2 border text-center"
+        tdDate.classList = "p-3 border text-center"
         tdDate.textContent = employee.date
         tr.appendChild(tdDate)
 
@@ -151,12 +167,12 @@
         tr.appendChild(tdSalary)
 
         const tdRole = document.createElement("td")
-        tdRole.classList = "p-2 border"
+        tdRole.classList = "p-3 border"
         tdRole.textContent = employee.role
         tr.appendChild(tdRole)
 
         const tdActive = document.createElement("td")
-        tdActive.classList = "p-2 border text-center"
+        tdActive.classList = "p-3 border text-center"
         const spanActive = document.createElement("span")
         spanActive.classList = employee.active ? "font-semibold text-green-400" : "font-semibold text-red-400"
         spanActive.textContent = employee.active ? "Active" : "Inactive"
@@ -164,7 +180,7 @@
         tr.appendChild(tdActive)
 
         const tdActions = document.createElement("td")
-        tdActions.classList = "p-2 border text-center"
+        tdActions.classList = "p-3 border text-center"
         
         const inputUpdate = document.createElement("input")
         inputUpdate.classList = "py-1 px-2 m-1 rounded cursor-pointer bg-orange-700 hover:bg-orange-600 active:bg-orange-800"
@@ -183,11 +199,32 @@
         tr.appendChild(tdActions)
         table.appendChild(tr)
       })
+      const diff = Math.abs(vars.totalCount - (entryInput.value * Math.ceil(vars.totalCount / entryInput.value)))
+      if (diff !== 0 && vars.currentPage >= Math.ceil(vars.totalCount / entryInput.value)) {
+        for (let index = 0; index < diff; index++) {
+          const tr = document.createElement("tr")
+          const td = document.createElement("td")
+          td.classList = "h-24"
+          td.colSpan = 9
+          tr.appendChild(td)
+          table.appendChild(tr)
+        }
+      }
     } else {
       const tr = document.createElement("tr")
       const td = document.createElement("td")
       td.colSpan = 9
-      td.classList = "h-64 text-center"
+      switch (parseInt(entryInput.value)) {
+        case 3:
+          td.classList = `h-[calc(0.25rem*24*3)] text-center`
+          break
+        case 5:
+          td.classList = `h-[calc(0.25rem*24*5)] text-center`
+          break
+        default:
+          td.classList = `h-[calc(0.25rem*24*2)] text-center`
+          break
+      }
       td.textContent = "empty data"
       tr.appendChild(td)
       table.appendChild(tr)
@@ -371,11 +408,11 @@
   function activatePage(page, condition) {
     const pageClass = document.querySelector(`#page${page}`).classList
     if (condition === true) {
-      pageClass.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+      pageClass.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600", "cursor-pointer")
       pageClass.add("bg-white", "text-black", "cursor-default")
     } else {
       pageClass.remove("bg-white", "text-black", "cursor-default")
-      pageClass.add("text-white", "hover:bg-gray-800", "active:bg-gray-600")
+      pageClass.add("text-white", "hover:bg-gray-800", "active:bg-gray-600", "cursor-pointer")
     }
   }
 
@@ -384,27 +421,25 @@
    * @param {number} page 
    */
   function renderPages(page) {
-    if (vars.totalCount !== 0) {
-      const totalPages = Math.ceil(vars.totalCount / entryInput.value)
-      pageButton.innerHTML = ""
-      for (let index = 1; index <= totalPages; index++) {
-        const input = document.createElement("input")
-        input.type = "button"
-        input.value = index
-        input.id = "page" + index
-        input.addEventListener("mouseup", () => toPage(index))
-        input.classList = "border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600"
-        pageButton.appendChild(input)
-      }
-      
-      activatePage(page, true)
-      activatePrevPage(false)
+    const totalPages = vars.totalCount ? Math.ceil(vars.totalCount / entryInput.value) : 1
+    pageButton.innerHTML = ""
+    for (let index = 1; index <= totalPages; index++) {
+      const input = document.createElement("input")
+      input.type = "button"
+      input.value = index
+      input.id = "page" + index
+      input.addEventListener("mouseup", () => toPage(index))
+      input.classList = "border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600"
+      pageButton.appendChild(input)
+    }
+    
+    activatePage(page, true)
+    activatePrevPage(false)
 
-      if (vars.totalCount / entryInput.value <= 1) {
-        activateNextPage(false)
-      } else {
-        activateNextPage(true)
-      }
+    if (vars.totalCount / entryInput.value <= 1) {
+      activateNextPage(false)
+    } else {
+      activateNextPage(true)
     }
   }
 
@@ -428,9 +463,9 @@
       const resEmployee = await getEmployee(index)
       employees.length = 0
       employees.push(...resEmployee)
-      renderEmployee()
-
+      
       vars.currentPage = index
+      renderEmployee()
       // if (filterOn) {
       //   renderEmployee(filteredEmployees)
       //   if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {

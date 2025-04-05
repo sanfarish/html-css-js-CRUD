@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "Employee Management System App using HtmL, Tailwind CSS, and JavaScript only.",
   "scripts": {
-    "css": "npx @tailwindcss/cli -i src/input.css -o src/output.css -w",
-    "prettier": "npx prettier index.html -w",
+    "start": "json-server db.json --middlewares middlewares/upload.js -w",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "json-server db.json --middlewares middlewares/upload.js -w"
+    "prettier": "npx prettier index.html -w"
   },
   "repository": {
     "type": "git",
@@ -21,7 +20,7 @@
   },
   "homepage": "https://github.com/sanfarish/html-css-js-CRUD#readme",
   "dependencies": {
-    "@tailwindcss/cli": "^4.0.14",
+    "@tailwindcss/vite": "^4.1.2",
     "json-server": "^0.17.4",
     "multer": "^1.4.5-lts.2",
     "tailwindcss": "^4.0.14"
