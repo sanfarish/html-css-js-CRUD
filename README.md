@@ -20,26 +20,25 @@
 2. Clone this repository via Git or download zip.
 3. Rename `db.json.example` to `db.json`.
 4. Open a terminal in the repo folder and run `npm i` to install modules, wait until it's done.
-5. Run `npm run build` to build client.
-6. Run `npm run preview` to preview built client, do not close terminal.
-7. Open another terminal and run `npm start` to start server, do not close terminal.
-8. Open `http://localhost:4173` onto your browser.
-9. You're good to go!
+5. Run `npm start` to start server, do not close terminal.
+6. Open another terminal and run `npm run build` and immediately after, run `npm run preview` to start client, do not close terminal.
+7. Open `http://localhost:4173` onto your browser.
 
 ## Screenshots
 
 ![pic](screenshots/screenshot-1.png)
 ![pic](screenshots/screenshot-2.png)
+![pic](screenshots/screenshot-3.png)
 
 ## [WIP] Next Features
 
 ### UI related
 
-1. Add responsiveness by showing fewer data
-2. Compensate fewer data shown by adding detail button
-3. Loading animation
+1. Add responsive UI
+2. Add detail button on each employee
+3. Loading and error animation
 
 ### CRUD related
 
-1. Function to update data
+1. Update employee
 2. Sanitise input
