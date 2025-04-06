@@ -22,7 +22,6 @@
             Show
             <select
               class="cursor-pointer rounded border px-1 py-1 hover:outline"
-              name="entries"
               id="entries"
             >
               <option class="text-black" value="2" selected>2</option>
@@ -55,6 +54,32 @@
         </div>
 
         <!-- Card Header 2 -->
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2 text-white">
+            Sort by:
+            <select
+              class="cursor-pointer rounded border px-1 py-1 hover:outline"
+              id="sort"
+            >
+              <option class="text-black" value="name" selected>Name</option>
+              <option class="text-black" value="id">ID</option>
+              <option class="text-black" value="email">Email</option>
+              <option class="text-black" value="date">Start Date</option>
+              <option class="text-black" value="salary">Salary</option>
+              <option class="text-black" value="role">Role</option>
+              <option class="text-black" value="active">Status</option>
+            </select>
+            <select
+              class="cursor-pointer rounded border px-1 py-1 hover:outline"
+              id="order"
+            >
+              <option class="text-black" value="asc" selected>Ascending</option>
+              <option class="text-black" value="desc">Descending</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Card Header 3 -->
         <div class="flex items-center">
           <input
             class="bg-button1 hover:bg-button2 active:bg-button3 mr-auto cursor-pointer rounded px-4 py-2 font-semibold"

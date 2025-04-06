@@ -1,9 +1,6 @@
 (() => {
   const API_URL = "http://localhost:3000"
   const employees = []
-  // const PICTURES_URL = "http://localhost:3000/pictures"
-  // const pictures = []
-  // const filteredEmployees = []
 
   const vars = {
     totalCount: 0,
@@ -14,16 +11,12 @@
     currentPage: 1,
     keyword: ""
   }
-  // let startIndex = 0
-  // let endIndex = entryInput.value - 1
-  // let currentPage = 1
-  // let filterOn = false
   let pictureData = "default"
-  // let currentPage = 1
-  // let limit = 2
 
   const table = document.querySelector("#data")
   const entryInput = document.querySelector("#entries")
+  const sortInput = document.querySelector("#sort")
+  const orderInput = document.querySelector("#order")
   const keywordsForm = document.querySelector("#keywords-form")
   const keywordsInput = document.querySelector("#keywords-input")
   const pageButton = document.querySelector("#pages")
@@ -44,12 +37,13 @@
   /**
    * request GET employee with query string
    * @param {string} page 
-   * @param {string} keyword 
    * @returns 
    */
   async function getEmployee(page) {
     try {
-      const fullURL = vars.keyword !== "" ? `/employees?_page=${page}&_limit=${entryInput.value}&q=${vars.keyword}` : `/employees?_page=${page}&_limit=${entryInput.value}`
+      const orderValue = sortInput.value === "active" ? (orderInput.value === "asc" ? "desc" : "asc") : orderInput.value
+      let fullURL = `/employees?_page=${page}&_limit=${entryInput.value}&_sort=${sortInput.value}&_order=${orderValue}`
+      if (vars.keyword !== "") fullURL += `&q=${vars.keyword}`
       const res = await fetch(API_URL + fullURL)
       
       if (res.headers.get("x-total-count")) {
@@ -96,15 +90,6 @@
     }
   }
 
-  // /**
-  //  * Fill array with data.
-  //  * @param {Array} data 
-  //  * @param {Array} array 
-  //  */
-  // function manipulateData(data, array) {
-  //   array.push(...data)
-  // }
-
   /**
    * Render employee table
    */
@@ -112,11 +97,6 @@
     table.innerHTML = ""
     if (employees.length !== 0) {
       employees.forEach(employee => {
-        // if (index >= startIndex && index <= endIndex ) {
-        // }
-        // const pictureArr = pictures.filter(pic => pic.id === employee.picture)
-        // const pictureObj = pictureArr[0]
-        // const pictureSource = pictureObj.picture
 
         const tr = document.createElement("tr")
         tr.classList = "h-24"
@@ -236,59 +216,53 @@
    */
   window.onload = async () => {
     try {
-      // const rawEmployee = await fetch(API_URL + `?_page=${currentPage}&_limit=${limit}`)
       employees.length = 0
       const resEmployee = await getEmployee(vars.currentPage)
       employees.push(...resEmployee)
-
-      // const rawPic = await fetch(PICTURES_URL)
-      // const resPic = await rawPic.json()
-      // pictures.push(...resPic)
-      // manipulateData(employeeData, employees)
-      // manipulateData(pictureData, pictures)
+      
       renderEmployee()
       renderPages(vars.currentPage)
     } catch (error) {
       console.log(error)
       renderEmployee()
-      // renderPages(employees.length)
     }
   }
 
   /**
    * Entry selection change actions
    */
-  entryInput.addEventListener("change", async e => {
+  entryInput.addEventListener("change", async () => {
     vars.currentPage = 1
     employees.length = 0
     const resEmployee = await getEmployee(vars.currentPage)
     employees.push(...resEmployee)
-    // if (filterOn) {
-    //   renderEmployee(filteredEmployees)
-    //   renderPages(filteredEmployees.length)
-    // } else {
-    // }
     renderEmployee()
     renderPages(vars.currentPage)
   })
 
-  // /**
-  //  * Search input actions
-  //  */
-  // searchInput.addEventListener("input", e => {
-  //   const term = e.target.value.toLowerCase()
-  //   filteredEmployees.length = 0
-  //   startIndex = 0
-  //   if (term !== null || term !== "") {
-  //     filterOn = true
-  //     filteredEmployees.push(...employees.filter(employee => employee.id.toLowerCase().includes(term) || employee.name.toLowerCase().includes(term) || employee.email.toLowerCase().includes(term) || employee.role.toLowerCase().includes(term)))
-  //     renderEmployee(filteredEmployees)
-  //     renderPages(filteredEmployees.length)
-  //   } else {
-  //     filterOn = false
-  //     renderEmployee(employees)
-  //   }
-  // })
+  /**
+   * Sort selection change actions
+   */
+  sortInput.addEventListener("change", async () => {
+    vars.currentPage = 1
+    employees.length = 0
+    const resEmployee = await getEmployee(vars.currentPage)
+    employees.push(...resEmployee)
+    renderEmployee()
+    renderPages(vars.currentPage)
+  })
+
+  /**
+   * Sort selection change actions
+   */
+  orderInput.addEventListener("change", async () => {
+    vars.currentPage = 1
+    employees.length = 0
+    const resEmployee = await getEmployee(vars.currentPage)
+    employees.push(...resEmployee)
+    renderEmployee()
+    renderPages(vars.currentPage)
+  })
 
   /**
    * Keyword filter form submit actions
@@ -449,8 +423,6 @@
    */
   window.toPage = async (index) => {
     if (index !== vars.currentPage) {
-      // startIndex = (index * entryInput.value) - entryInput.value
-      // endIndex = (index * entryInput.value) - 1
       activatePage(vars.currentPage, false)
       activatePage(index, true)
 
@@ -466,21 +438,6 @@
       
       vars.currentPage = index
       renderEmployee()
-      // if (filterOn) {
-      //   renderEmployee(filteredEmployees)
-      //   if (index >= Math.ceil(filteredEmployees.length / entryInput.value)) {
-      //     deactivateNextPage()
-      //   } else {
-      //     activateNextPage()
-      //   }
-      // } else {
-      //   renderEmployee(employees)
-      //   if (index >= Math.ceil(employees.length / entryInput.value)) {
-      //     deactivateNextPage()
-      //   } else {
-      //     activateNextPage()
-      //   }
-      // }
       if (index <= 1) {
         activatePrevPage(false)
       } else {
@@ -505,7 +462,6 @@
    * Next page button action
    */
   nextPage.addEventListener("mouseup", () => {
-    // const dataLength = filterOn ? filteredEmployees.length : employees.length
     if (vars.currentPage < Math.ceil(vars.totalCount / entryInput.value)) {
       activatePage(vars.currentPage, false)
       toPage(vars.currentPage + 1)

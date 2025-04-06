@@ -7,6 +7,7 @@
 
 * User-friendly interface
 * Entry selection to manage employee records efficiently
+* Sort and order data to improve records readability
 * Filter employees by ID, name, email or role to find employees quickly
 * Pagination for easy navigation through employee records
 * Modal display for easy access of adding employee
@@ -40,6 +41,5 @@
 
 ### CRUD related
 
-1. Add sort function
-2. Function to update data
-3. Sanitise input
+1. Function to update data
+2. Sanitise input
