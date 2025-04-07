@@ -117,8 +117,23 @@
           </tbody>
         </table>
 
+        <!-- Pagination-->
+        <nav aria-label="page navigation" class="flex justify-center">
+          <ul class="inline-flex -space-x-px text-base h-10" id="pagination">
+            <li>
+              <a href="#" class="flex items-center justify-center px-4 h-10 ms-0 leading-tight border border-e-0 rounded-s-lg   bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white" id="previous">Previous</a>
+            </li>
+            <li id="pageContainer1">
+              <a href="#" aria-current="page" class="flex items-center justify-center px-4 h-10 border hover:bg-blue-100 hover:text-blue-700 border-gray-700 bg-gray-700 text-white" id="page1">1</a>
+            </li>
+            <li>
+              <a href="#" class="flex items-center justify-center px-4 h-10 leading-tight border rounded-e-lg bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white" id="next">&nbsp;&nbsp;&nbsp;Next&nbsp;&nbsp;&nbsp;</a>
+            </li>
+          </ul>
+        </nav>
+        
         <!-- Pagination -->
-        <div class="flex justify-center gap-4 text-white">
+        <!-- <div class="flex justify-center gap-4 text-white">
           <input
             class="cursor-not-allowed rounded border px-2 py-1 text-gray-400"
             type="button"
@@ -139,7 +154,7 @@
             value="Next"
             id="next"
           />
-        </div>
+        </div> -->
       </div>
     </main>
 

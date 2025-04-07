@@ -351,12 +351,19 @@
   function activatePrevPage(condition) {
     const prevClass = prevPage.classList
     if (condition === true) {
-      prevClass.remove("text-gray-400", "cursor-not-allowed")
-      prevClass.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+      prevClass.remove("hover:bg-gray-700", "hover:text-white", "cursor-not-allowed")
+      prevClass.add("hover:bg-gray-700", "hover:text-white")
     } else {
-      prevClass.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-      prevClass.add("text-gray-400", "cursor-not-allowed")
+      prevClass.remove("hover:bg-gray-700", "hover:text-white")
+      prevClass.add("cursor-not-allowed")
     }
+    // if (condition === true) {
+    //   prevClass.remove("text-gray-400", "cursor-not-allowed")
+    //   prevClass.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    // } else {
+    //   prevClass.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    //   prevClass.add("text-gray-400", "cursor-not-allowed")
+    // }
   }
 
   /**
@@ -366,12 +373,19 @@
   function activateNextPage(condition) {
     const nextClass = nextPage.classList
     if (condition === true) {
-      nextClass.remove("text-gray-400", "cursor-not-allowed")
-      nextClass.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+      nextClass.remove("hover:bg-gray-700", "hover:text-white", "cursor-not-allowed")
+      nextClass.add("hover:bg-gray-700", "hover:text-white")
     } else {
-      nextClass.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
-      nextClass.add("text-gray-400", "cursor-not-allowed")
+      nextClass.remove("hover:bg-gray-700", "hover:text-white")
+      nextClass.add("cursor-not-allowed")
     }
+    // if (condition === true) {
+    //   nextClass.remove("text-gray-400", "cursor-not-allowed")
+    //   nextClass.add("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    // } else {
+    //   nextClass.remove("text-white", "cursor-pointer", "hover:bg-gray-800", "active:bg-gray-600")
+    //   nextClass.add("text-gray-400", "cursor-not-allowed")
+    // }
   }
 
   /**
@@ -382,12 +396,19 @@
   function activatePage(page, condition) {
     const pageClass = document.querySelector(`#page${page}`).classList
     if (condition === true) {
-      pageClass.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600", "cursor-pointer")
-      pageClass.add("bg-white", "text-black", "cursor-default")
+      pageClass.remove("leading-tight", "bg-gray-800", "border-gray-700", "text-gray-400", "hover:bg-gray-700", "hover:text-white")
+      pageClass.add("hover:bg-blue-100", "hover:text-blue-700", "border-gray-700", "bg-gray-700", "text-white")
     } else {
-      pageClass.remove("bg-white", "text-black", "cursor-default")
-      pageClass.add("text-white", "hover:bg-gray-800", "active:bg-gray-600", "cursor-pointer")
+      pageClass.remove("hover:bg-blue-100", "hover:text-blue-700", "border-gray-700", "bg-gray-700", "text-white")
+      pageClass.add("leading-tight", "bg-gray-800", "border-gray-700", "text-gray-400", "hover:bg-gray-700", "hover:text-white")
     }
+    // if (condition === true) {
+    //   pageClass.remove("text-white", "hover:bg-gray-800", "active:bg-gray-600", "cursor-pointer")
+    //   pageClass.add("bg-white", "text-black", "cursor-default")
+    // } else {
+    //   pageClass.remove("bg-white", "text-black", "cursor-default")
+    //   pageClass.add("text-white", "hover:bg-gray-800", "active:bg-gray-600", "cursor-pointer")
+    // }
   }
 
   /**
@@ -396,15 +417,33 @@
    */
   function renderPages(page) {
     const totalPages = vars.totalCount ? Math.ceil(vars.totalCount / entryInput.value) : 1
-    pageButton.innerHTML = ""
+    const pagination = document.querySelector("#pagination")
+    document.querySelectorAll('[id^="pageContainer"]').forEach(page => {
+      page.remove()
+    })
+    // pageButton.innerHTML = ""
     for (let index = 1; index <= totalPages; index++) {
-      const input = document.createElement("input")
-      input.type = "button"
-      input.value = index
-      input.id = "page" + index
-      input.addEventListener("mouseup", () => toPage(index))
-      input.classList = "border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600"
-      pageButton.appendChild(input)
+
+      const newPage = document.createElement("li")
+      newPage.id = "pageContainer" + index
+      const alink = document.createElement("a")
+      alink.textContent = index
+      alink.href = "#"
+      alink.id = "page" + index
+      alink.classList = "flex items-center justify-center px-4 h-10 leading-tight border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white"
+      alink.addEventListener("mouseup", () => toPage(index))
+      newPage.appendChild(alink)
+      // pagination.insertBefore(newPage, pagination.childNodes[2 + index - 1])
+      pagination.insertBefore(newPage, pagination.lastElementChild)
+      // pagination.appendChild(newPage)
+
+      // const input = document.createElement("input")
+      // input.type = "button"
+      // input.value = index
+      // input.id = "page" + index
+      // input.addEventListener("mouseup", () => toPage(index))
+      // input.classList = "border rounded px-2 py-1 cursor-pointer hover:bg-gray-800 active:bg-gray-600"
+      // pageButton.appendChild(input)
     }
     
     activatePage(page, true)
@@ -458,6 +497,13 @@
     }
   })
 
+  // document.querySelector("#prevPage").addEventListener("mouseup", () => {
+  //   if (vars.currentPage > 1) {
+  //     activatePage(vars.currentPage, false)
+  //     toPage(vars.currentPage - 1)
+  //   }
+  // })
+
   /**
    * Next page button action
    */
@@ -467,6 +513,13 @@
       toPage(vars.currentPage + 1)
     }
   })
+
+  // document.querySelector("#nextPage").addEventListener("mouseup", () => {
+  //   if (vars.currentPage < Math.ceil(vars.totalCount / entryInput.value)) {
+  //     activatePage(vars.currentPage, false)
+  //     toPage(vars.currentPage + 1)
+  //   }
+  // })
 
   /**
    * Open modal button actions
